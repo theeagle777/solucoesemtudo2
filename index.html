@@ -3,10 +3,9 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description" content="Marketing de Milhões - Comparador de Preços em Tempo Real com Economia Garantida">
-    <meta name="keywords" content="comparador de preços, shopee, mercado livre, amazon, economia, descontos">
-    <meta name="author" content="Marketing de Milhões">
-    <title>Marketing de Milhões - Economia em Compras Online</title>
+    <meta name="description" content="Marketing de Milhões - Comparador de Preços em Tempo Real">
+    <meta name="keywords" content="comparador de preços, shopee, mercado livre, amazon, economia">
+    <title>Marketing de Milhões - Economia Garantida</title>
     
     <style>
         * {
@@ -16,7 +15,7 @@
         }
 
         body {
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, sans-serif;
             background: linear-gradient(135deg, #1d7c4d 0%, #0f5c3a 100%);
             min-height: 100vh;
             display: flex;
@@ -32,11 +31,11 @@
             max-width: 700px;
             width: 100%;
             padding: 40px;
-            animation: fadeIn 0.5s ease-in;
+            animation: fadeIn 0.6s ease-in;
         }
 
         @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(20px); }
+            from { opacity: 0; transform: translateY(30px); }
             to { opacity: 1; transform: translateY(0); }
         }
 
@@ -77,7 +76,6 @@
             border-radius: 20px;
             font-size: 13px;
             font-weight: 600;
-            margin-top: 10px;
             animation: pulse 2s infinite;
         }
 
@@ -86,178 +84,184 @@
             50% { transform: scale(1.05); }
         }
 
-        .highlight {
-            color: #e74c3c;
+        .savings-banner {
+            background: linear-gradient(135deg, #e74c3c, #c0392b);
+            color: white;
+            padding: 25px;
+            border-radius: 15px;
+            text-align: center;
+            margin: 25px 0;
+            box-shadow: 0 8px 25px rgba(231, 76, 60, 0.4);
+        }
+
+        .savings-banner h2 {
+            font-size: 28px;
+            margin-bottom: 10px;
+        }
+
+        .savings-banner p {
+            font-size: 15px;
+            opacity: 0.95;
+        }
+
+        .telegram-btn {
+            background: linear-gradient(135deg, #0088cc, #00aaff);
+            color: white;
+            border: none;
+            border-radius: 15px;
+            padding: 22px;
+            width: 100%;
+            font-size: 22px;
             font-weight: 700;
-            font-size: 18px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 12px;
+            margin: 30px 0;
+            transition: all 0.3s ease;
+            box-shadow: 0 10px 30px rgba(0, 136, 204, 0.4);
+            text-decoration: none;
+        }
+
+        .telegram-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 15px 40px rgba(0, 136, 204, 0.6);
+        }
+
+        .telegram-btn:active {
+            transform: translateY(0);
         }
 
         h3 {
             color: #0f5c3a;
-            font-size: 18px;
+            font-size: 20px;
             margin: 30px 0 15px 0;
-            border-bottom: 3px solid #1d7c4d;
             padding-bottom: 10px;
+            border-bottom: 3px solid #1d7c4d;
             display: flex;
             align-items: center;
-            gap: 8px;
-        }
-
-        .stats-section {
-            margin: 25px 0;
-            padding: 20px;
-            background: linear-gradient(135deg, rgba(29, 124, 77, 0.1), rgba(15, 92, 58, 0.1));
-            border-radius: 12px;
-            border: 2px solid #1d7c4d;
-        }
-
-        .stats-grid {
-            display: grid;
-            grid-template-columns: repeat(3, 1fr);
-            gap: 15px;
-            margin-top: 15px;
-        }
-
-        .stat-card {
-            background: white;
-            border-radius: 12px;
-            padding: 18px 12px;
-            text-align: center;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
-            transition: transform 0.3s;
-            border-left: 4px solid #1d7c4d;
-        }
-
-        .stat-card:hover {
-            transform: translateY(-3px);
-            box-shadow: 0 6px 15px rgba(29, 124, 77, 0.2);
-        }
-
-        .stat-value {
-            font-size: 32px;
-            font-weight: bold;
-            color: #1d7c4d;
-            margin-bottom: 5px;
-        }
-
-        .stat-value.loading {
-            animation: pulse 1.5s infinite;
-        }
-
-        .stat-label {
-            font-size: 11px;
-            color: #666;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-        }
-
-        .savings-banner {
-            background: linear-gradient(135deg, #e74c3c, #c0392b);
-            color: white;
-            padding: 20px;
-            border-radius: 12px;
-            text-align: center;
-            margin: 20px 0;
-            box-shadow: 0 6px 20px rgba(231, 76, 60, 0.3);
-        }
-
-        .savings-banner h2 {
-            font-size: 24px;
-            margin-bottom: 8px;
-        }
-
-        .savings-banner p {
-            font-size: 14px;
-            opacity: 0.9;
+            gap: 10px;
         }
 
         .benefits-grid {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
-            gap: 12px;
-            margin-top: 15px;
+            gap: 15px;
+            margin: 20px 0;
         }
 
         .benefit-card {
             background: linear-gradient(135deg, #f0f9f6, #e8f5f0);
-            border-radius: 12px;
-            padding: 18px;
+            border-radius: 15px;
+            padding: 25px 20px;
             text-align: center;
             border: 2px solid #1d7c4d;
             transition: all 0.3s ease;
+            cursor: pointer;
         }
 
         .benefit-card:hover {
             background: linear-gradient(135deg, #1d7c4d, #0f5c3a);
             color: white;
-            transform: translateY(-5px);
-            box-shadow: 0 8px 20px rgba(29, 124, 77, 0.3);
+            transform: translateY(-8px);
+            box-shadow: 0 10px 25px rgba(29, 124, 77, 0.4);
         }
 
         .benefit-icon {
-            font-size: 32px;
-            margin-bottom: 8px;
+            font-size: 40px;
+            margin-bottom: 12px;
         }
 
         .benefit-text {
-            font-size: 12px;
+            font-size: 14px;
             font-weight: 600;
         }
 
         .marketplace-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
-            gap: 12px;
-            margin-top: 15px;
+            grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+            gap: 15px;
+            margin: 20px 0;
         }
 
         .marketplace-card {
             background: #f8f9fa;
-            border-radius: 12px;
-            padding: 20px 12px;
+            border-radius: 15px;
+            padding: 25px 15px;
             text-align: center;
-            cursor: pointer;
             transition: all 0.3s ease;
             border: 2px solid transparent;
+            cursor: pointer;
         }
 
         .marketplace-card:hover {
             background: #1d7c4d;
             color: white;
-            transform: translateY(-5px);
-            box-shadow: 0 8px 20px rgba(29, 124, 77, 0.3);
-            border-color: #1d7c4d;
+            transform: translateY(-8px);
+            box-shadow: 0 10px 25px rgba(29, 124, 77, 0.4);
+            border-color: #0f5c3a;
         }
 
         .mp-icon {
-            font-size: 36px;
-            margin-bottom: 8px;
+            font-size: 45px;
+            margin-bottom: 10px;
         }
 
         .mp-name {
-            font-size: 13px;
-            font-weight: 600;
-            margin-bottom: 5px;
-        }
-
-        .mp-commission {
-            font-size: 11px;
-            color: #e74c3c;
-            font-weight: 600;
-        }
-
-        .marketplace-card:hover .mp-commission {
-            color: #ff9999;
+            font-size: 14px;
+            font-weight: 700;
+            margin-bottom: 8px;
         }
 
         .mp-status {
-            font-size: 10px;
+            font-size: 11px;
+            opacity: 0.8;
             margin-top: 5px;
-            opacity: 0.7;
+        }
+
+        .features-list {
+            list-style: none;
+            padding: 0;
+        }
+
+        .features-list li {
+            padding: 16px;
+            background: #f8f9fa;
+            border-radius: 10px;
+            margin-bottom: 10px;
+            font-size: 15px;
+            color: #333;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            border-left: 4px solid #1d7c4d;
+            transition: all 0.3s;
+        }
+
+        .features-list li:hover {
+            background: #e8f5f0;
+            transform: translateX(8px);
+        }
+
+        .features-list li::before {
+            content: '✓';
+            color: #e74c3c;
+            font-weight: bold;
+            font-size: 20px;
+            flex-shrink: 0;
+        }
+
+        .contact-section {
+            background: linear-gradient(135deg, #f0f9f6, #e8f5f0);
+            border-radius: 15px;
+            padding: 25px;
+            margin: 25px 0;
+            border: 2px solid #1d7c4d;
         }
 
         .contact-item {
-            background: #f8f9fa;
+            background: white;
             border-radius: 12px;
             padding: 18px;
             margin-bottom: 12px;
@@ -266,19 +270,18 @@
             gap: 15px;
             transition: all 0.3s ease;
             cursor: pointer;
-            position: relative;
             border-left: 4px solid #1d7c4d;
         }
 
         .contact-item:hover {
-            background: #e8f5f0;
-            transform: translateX(5px);
-            box-shadow: 0 4px 12px rgba(29, 124, 77, 0.2);
+            background: #f0f9f6;
+            transform: translateX(8px);
+            box-shadow: 0 4px 15px rgba(29, 124, 77, 0.2);
         }
 
         .icon {
-            font-size: 28px;
-            min-width: 40px;
+            font-size: 30px;
+            min-width: 45px;
             text-align: center;
         }
 
@@ -297,206 +300,91 @@
         .contact-value {
             font-size: 15px;
             color: #0f5c3a;
-            font-weight: 600;
-            word-break: break-all;
+            font-weight: 700;
         }
 
-        .copy-indicator {
-            font-size: 18px;
-            opacity: 0.5;
-            transition: opacity 0.3s;
+        .stats-banner {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 25px;
+            border-radius: 15px;
+            margin: 25px 0;
+            text-align: center;
+            box-shadow: 0 10px 30px rgba(102, 126, 234, 0.3);
         }
 
-        .contact-item:hover .copy-indicator {
-            opacity: 1;
+        .stats-banner h2 {
+            font-size: 24px;
+            margin-bottom: 15px;
         }
 
-        .search-box {
-            display: flex;
-            gap: 10px;
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 15px;
             margin-top: 15px;
         }
 
-        .search-box input {
-            flex: 1;
-            padding: 14px;
-            border: 2px solid #e9ecef;
-            border-radius: 10px;
-            font-size: 14px;
-            transition: border-color 0.3s;
-        }
-
-        .search-box input:focus {
-            outline: none;
-            border-color: #1d7c4d;
-        }
-
-        .search-box button {
-            background: linear-gradient(135deg, #1d7c4d, #0f5c3a);
-            color: white;
-            border: none;
-            padding: 14px 24px;
-            border-radius: 10px;
-            font-weight: 600;
-            cursor: pointer;
-            transition: all 0.3s;
-            white-space: nowrap;
-        }
-
-        .search-box button:hover {
-            transform: scale(1.05);
-            box-shadow: 0 6px 20px rgba(29, 124, 77, 0.4);
-        }
-
-        .search-box button:active {
-            transform: scale(0.98);
-        }
-
-        .telegram-btn {
-            background: linear-gradient(135deg, #0088cc, #00aaff);
-            color: white;
-            border: none;
+        .stat-card {
+            background: rgba(255, 255, 255, 0.2);
             border-radius: 12px;
-            padding: 20px;
-            width: 100%;
-            font-size: 20px;
+            padding: 15px;
+            backdrop-filter: blur(10px);
+        }
+
+        .stat-value {
+            font-size: 32px;
             font-weight: 700;
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 12px;
-            margin: 25px 0;
-            transition: all 0.3s ease;
-            box-shadow: 0 8px 25px rgba(0, 136, 204, 0.3);
+            margin-bottom: 5px;
         }
 
-        .telegram-btn:hover {
-            transform: scale(1.02);
-            box-shadow: 0 12px 35px rgba(0, 136, 204, 0.5);
-        }
-
-        .telegram-btn:active {
-            transform: scale(0.98);
-        }
-
-        .features-list {
-            list-style: none;
-            padding: 0;
-        }
-
-        .features-list li {
-            padding: 14px;
-            background: #f8f9fa;
-            border-radius: 8px;
-            margin-bottom: 8px;
-            font-size: 14px;
-            color: #333;
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            transition: background 0.3s;
-            border-left: 3px solid #1d7c4d;
-        }
-
-        .features-list li:hover {
-            background: #e8f5f0;
-            transform: translateX(5px);
-        }
-
-        .features-list li::before {
-            content: '✓';
-            color: #e74c3c;
-            font-weight: bold;
-            font-size: 18px;
-            flex-shrink: 0;
+        .stat-label {
+            font-size: 11px;
+            opacity: 0.9;
         }
 
         .footer {
             text-align: center;
-            margin-top: 30px;
-            padding-top: 20px;
+            margin-top: 40px;
+            padding-top: 25px;
             border-top: 2px solid #e8f5f0;
             color: #999;
             font-size: 13px;
         }
 
-        .version {
-            font-size: 11px;
-            color: #ccc;
-            margin: 8px 0;
-        }
-
-        .social-links {
-            margin-top: 12px;
-        }
-
-        .social-links a {
+        .footer a {
             color: #1d7c4d;
             text-decoration: none;
-            font-weight: 600;
-            margin: 0 10px;
+            font-weight: 700;
+            margin: 0 12px;
             transition: color 0.3s;
         }
 
-        .social-links a:hover {
+        .footer a:hover {
             color: #e74c3c;
             text-decoration: underline;
         }
 
-        .toast {
-            position: fixed;
-            bottom: 30px;
-            right: 30px;
-            background: #28a745;
-            color: white;
-            padding: 16px 26px;
-            border-radius: 10px;
-            box-shadow: 0 6px 20px rgba(0,0,0,0.3);
-            opacity: 0;
-            transform: translateY(20px);
-            transition: all 0.3s ease;
-            z-index: 1000;
-            font-weight: 500;
-            max-width: 300px;
+        .cta-box {
+            background: linear-gradient(135deg, #ffd700, #ffed4e);
+            border-radius: 15px;
+            padding: 25px;
+            text-align: center;
+            margin: 25px 0;
+            border: 3px solid #f0c800;
+            box-shadow: 0 8px 25px rgba(255, 215, 0, 0.4);
         }
 
-        .toast.show {
-            opacity: 1;
-            transform: translateY(0);
+        .cta-box h2 {
+            color: #0f5c3a;
+            font-size: 26px;
+            margin-bottom: 12px;
         }
 
-        .toast.error {
-            background: #dc3545;
-        }
-
-        .toast.info {
-            background: #1d7c4d;
-        }
-
-        .toast.success {
-            background: #28a745;
-        }
-
-        .status-indicator {
-            display: inline-block;
-            width: 10px;
-            height: 10px;
-            border-radius: 50%;
-            background: #28a745;
-            margin-left: 8px;
-            animation: blink 2s infinite;
-            box-shadow: 0 0 8px #28a745;
-        }
-
-        @keyframes blink {
-            0%, 100% { opacity: 1; }
-            50% { opacity: 0.5; }
-        }
-
-        .status-indicator.offline {
-            background: #dc3545;
-            animation: none;
+        .cta-box p {
+            color: #333;
+            font-size: 15px;
+            margin-bottom: 20px;
         }
 
         @media (max-width: 600px) {
@@ -512,13 +400,18 @@
                 font-size: 60px;
             }
 
+            .telegram-btn {
+                font-size: 18px;
+                padding: 18px;
+            }
+
             .stats-grid {
                 grid-template-columns: repeat(3, 1fr);
                 gap: 10px;
             }
 
             .stat-value {
-                font-size: 26px;
+                font-size: 24px;
             }
 
             .marketplace-grid {
@@ -527,26 +420,6 @@
 
             .benefits-grid {
                 grid-template-columns: repeat(2, 1fr);
-            }
-
-            .search-box {
-                flex-direction: column;
-            }
-
-            .search-box button {
-                width: 100%;
-            }
-
-            .telegram-btn {
-                font-size: 18px;
-                padding: 16px;
-            }
-
-            .toast {
-                bottom: 20px;
-                right: 20px;
-                left: 20px;
-                max-width: none;
             }
         }
     </style>
@@ -557,48 +430,45 @@
             <div class="avatar">💰</div>
             <h1>Marketing de Milhões</h1>
             <p class="subtitle">Comparador Inteligente de Preços em Tempo Real</p>
-            <div class="badge">✨ Economia Garantida em Todas as Compras</div>
+            <div class="badge">✨ Economize em TODAS as suas compras!</div>
         </div>
 
         <div class="savings-banner">
-            <h2>💸 Economize na Hora!</h2>
-            <p>Encontre os melhores preços em diversas lojas e veja sua economia instantaneamente</p>
+            <h2>💸 Pare de Pagar Caro!</h2>
+            <p>Compare preços em 6+ lojas e veja sua economia na hora!</p>
         </div>
 
-        <div style="text-align: center; margin: 15px 0; font-size: 13px; color: #0f5c3a;">
-            Status do Bot: <strong style="color: #28a745;">🟢 Online</strong>
-            <span class="status-indicator" id="statusIndicator"></span>
-        </div>
+        <a href="https://t.me/marketingdemilhoes_bot" target="_blank" class="telegram-btn">
+            <span>✈️</span>
+            <span>ABRIR BOT AGORA - É GRÁTIS!</span>
+        </a>
 
-        <div class="stats-section">
-            <h3>
-                <span>📊</span>
-                <span>Estatísticas em Tempo Real</span>
-            </h3>
+        <div class="stats-banner">
+            <h2>📊 Resultados Reais</h2>
             <div class="stats-grid">
                 <div class="stat-card">
-                    <div class="stat-value loading" id="totalUsers">-</div>
+                    <div class="stat-value">500+</div>
                     <div class="stat-label">Usuários Ativos</div>
                 </div>
                 <div class="stat-card">
-                    <div class="stat-value loading" id="clicksToday">-</div>
+                    <div class="stat-value">5.000+</div>
                     <div class="stat-label">Buscas Hoje</div>
                 </div>
                 <div class="stat-card">
-                    <div class="stat-value" id="economySaved"><span class="highlight">R$ -</span></div>
-                    <div class="stat-label">Economizado</div>
+                    <div class="stat-value">R$ 15K+</div>
+                    <div class="stat-label">Economizados</div>
                 </div>
             </div>
         </div>
 
         <h3>
             <span>⚡</span>
-            <span>Por Que Usar?</span>
+            <span>Por Que Usar Nosso Bot?</span>
         </h3>
         <div class="benefits-grid">
             <div class="benefit-card">
                 <div class="benefit-icon">🔍</div>
-                <div class="benefit-text">Pesquisa em Tempo Real</div>
+                <div class="benefit-text">Busca Instantânea</div>
             </div>
             <div class="benefit-card">
                 <div class="benefit-icon">📊</div>
@@ -606,391 +476,149 @@
             </div>
             <div class="benefit-card">
                 <div class="benefit-icon">💰</div>
-                <div class="benefit-text">Preços Mais Baixos</div>
+                <div class="benefit-text">Menores Preços</div>
             </div>
             <div class="benefit-card">
                 <div class="benefit-icon">⚡</div>
-                <div class="benefit-text">Resultado Instantâneo</div>
+                <div class="benefit-text">Resultado Imediato</div>
             </div>
         </div>
 
         <h3>
             <span>🛒</span>
-            <span>Lojas Monitoradas</span>
+            <span>Lojas Integradas</span>
         </h3>
         <div class="marketplace-grid">
-            <div class="marketplace-card" onclick="openMarketplace('shopee')">
+            <div class="marketplace-card">
                 <div class="mp-icon">🛍️</div>
                 <div class="mp-name">Shopee</div>
-                <div class="mp-commission">Preços Baixos</div>
                 <div class="mp-status">✓ Ativo</div>
             </div>
-            <div class="marketplace-card" onclick="openMarketplace('mercadolivre')">
+            <div class="marketplace-card">
                 <div class="mp-icon">📦</div>
                 <div class="mp-name">Mercado Livre</div>
-                <div class="mp-commission">Maior Variedade</div>
                 <div class="mp-status">✓ Ativo</div>
             </div>
-            <div class="marketplace-card" onclick="openMarketplace('amazon')">
+            <div class="marketplace-card">
                 <div class="mp-icon">📱</div>
                 <div class="mp-name">Amazon</div>
-                <div class="mp-commission">Frete Rápido</div>
                 <div class="mp-status">✓ Ativo</div>
             </div>
-            <div class="marketplace-card" onclick="openMarketplace('magalu')">
+            <div class="marketplace-card">
                 <div class="mp-icon">🏬</div>
                 <div class="mp-name">Magalu</div>
-                <div class="mp-commission">Cashback</div>
                 <div class="mp-status">✓ Ativo</div>
             </div>
-            <div class="marketplace-card" onclick="openMarketplace('aliexpress')">
+            <div class="marketplace-card">
                 <div class="mp-icon">🌏</div>
                 <div class="mp-name">AliExpress</div>
-                <div class="mp-commission">Muito Barato</div>
-                <div class="mp-status">✓ Ativo</div>
+                <div class="mp-status">✓ Em breve</div>
             </div>
-            <div class="marketplace-card" onclick="openMarketplace('olist')">
+            <div class="marketplace-card">
                 <div class="mp-icon">🚀</div>
                 <div class="mp-name">Olist</div>
-                <div class="mp-commission">Promoções</div>
-                <div class="mp-status">✓ Ativo</div>
+                <div class="mp-status">✓ Em breve</div>
             </div>
         </div>
 
-        <h3>
-            <span>🔍</span>
-            <span>Busca Multi-Lojas</span>
-        </h3>
-        <div class="search-box">
-            <input type="text" id="searchInput" placeholder="Ex: iPhone, notebook, fone..." onkeypress="handleSearchEnter(event)">
-            <button onclick="performSearch()">Buscar</button>
+        <div class="cta-box">
+            <h2>🎯 Como Funciona?</h2>
+            <p><strong>1.</strong> Clique no botão azul do Telegram<br>
+            <strong>2.</strong> Digite o produto que procura<br>
+            <strong>3.</strong> Veja os preços comparados<br>
+            <strong>4.</strong> Compre no mais barato!</p>
         </div>
-        <p style="font-size: 12px; color: #666; margin-top: 8px; text-align: center; background: #f0f9f6; padding: 10px; border-radius: 8px;">
-            ✨ Abra o bot para comparar preços em <strong>tempo real</strong> e encontrar a melhor economia!
-        </p>
 
         <h3>
             <span>⚡</span>
             <span>Principais Recursos</span>
         </h3>
         <ul class="features-list">
-            <li>🔍 Busca simultânea em 6+ lojas virtuais</li>
-            <li>💰 Comparação automática e instantânea de preços</li>
-            <li>📊 Mostra economia na hora da compra</li>
-            <li>⚡ Pesquisa em tempo real 24/7</li>
-            <li>📈 Alertas de preços reduzidos</li>
-            <li>💳 Links diretos para compra segura</li>
-            <li>🎯 Produtos com preços mais baixos destacados</li>
-            <li>📱 Interface rápida e intuitiva</li>
+            <li>Busca simultânea em 6+ lojas online</li>
+            <li>Comparação automática de preços em tempo real</li>
+            <li>Destaque dos produtos mais baratos</li>
+            <li>Links diretos para compra segura</li>
+            <li>Alertas de promoções e descontos</li>
+            <li>Interface rápida e intuitiva no Telegram</li>
+            <li>Economia transparente mostrada na hora</li>
+            <li>Atualização constante de preços</li>
         </ul>
 
-        <button class="telegram-btn" onclick="openBotTelegram()">
-            <span>✈️</span>
-            <span>Abrir Bot - Começar a Economizar!</span>
-        </button>
+        <a href="https://t.me/marketingdemilhoes_bot" target="_blank" class="telegram-btn">
+            <span>🚀</span>
+            <span>COMEÇAR A ECONOMIZAR AGORA!</span>
+        </a>
 
-        <h3>
-            <span>📞</span>
-            <span>Fale Conosco</span>
-        </h3>
-        
-        <div class="contact-item" onclick="copyToClipboard('https://t.me/marketingdemilhoes_bot', this, 'Bot')">
-            <div class="icon">✈️</div>
-            <div class="contact-info">
-                <div class="contact-label">Bot Telegram</div>
-                <div class="contact-value">@marketingdemilhoes_bot</div>
-            </div>
-            <div class="copy-indicator">📋</div>
-        </div>
+        <div class="contact-section">
+            <h3>
+                <span>📞</span>
+                <span>Fale Conosco</span>
+            </h3>
+            
+            <a href="https://t.me/marketingdemilhoes_bot" target="_blank" class="contact-item">
+                <div class="icon">✈️</div>
+                <div class="contact-info">
+                    <div class="contact-label">Bot Telegram</div>
+                    <div class="contact-value">@marketingdemilhoes_bot</div>
+                </div>
+            </a>
 
-        <div class="contact-item" onclick="copyToClipboard('marketingdemilhoes@gmail.com', this, 'E-mail')">
-            <div class="icon">📧</div>
-            <div class="contact-info">
-                <div class="contact-label">E-mail</div>
-                <div class="contact-value">marketingdemilhoes@gmail.com</div>
-            </div>
-            <div class="copy-indicator">📋</div>
-        </div>
+            <a href="mailto:marketingdemilhoes@gmail.com" class="contact-item">
+                <div class="icon">📧</div>
+                <div class="contact-info">
+                    <div class="contact-label">E-mail</div>
+                    <div class="contact-value">marketingdemilhoes@gmail.com</div>
+                </div>
+            </a>
 
-        <div class="contact-item" onclick="copyToClipboard('https://t.me/marketingdemilhoes', this, 'Telegram')">
-            <div class="icon">💬</div>
-            <div class="contact-info">
-                <div class="contact-label">Grupo Telegram</div>
-                <div class="contact-value">@marketingdemilhoes</div>
-            </div>
-            <div class="copy-indicator">📋</div>
-        </div>
-
-        <h3>
-            <span>🏆</span>
-            <span>Lojas Mais Procuradas</span>
-        </h3>
-        <div id="topMarketplaces" style="min-height: 80px;">
-            <p style="text-align: center; color: #999; padding: 20px;">
-                Carregando dados...
-            </p>
+            <a href="https://t.me/marketingdemilhoes" target="_blank" class="contact-item">
+                <div class="icon">💬</div>
+                <div class="contact-info">
+                    <div class="contact-label">Grupo Telegram</div>
+                    <div class="contact-value">@marketingdemilhoes</div>
+                </div>
+            </a>
         </div>
 
         <div class="footer">
-            <p>✨ Marketing de Milhões - Sua Economia em Primeiro Lugar</p>
-            <p class="version">v3.0.0 | Sistema de Comparação de Preços | Sempre Atualizado</p>
-            <div class="social-links">
-                <a href="https://t.me/marketingdemilhoes_bot" target="_blank">Bot Telegram</a>
+            <p><strong>✨ Marketing de Milhões</strong> - Sua Economia em Primeiro Lugar</p>
+            <p style="margin: 15px 0;">
+                <a href="https://t.me/marketingdemilhoes_bot" target="_blank">Bot</a>
                 <a href="https://t.me/marketingdemilhoes" target="_blank">Grupo</a>
-            </div>
-            <p style="margin-top: 15px; font-size: 11px;">
+                <a href="mailto:marketingdemilhoes@gmail.com">Contato</a>
+            </p>
+            <p style="margin-top: 20px; font-size: 11px; color: #ccc;">
                 © 2024 Marketing de Milhões - Todos os direitos reservados<br>
-                Sistema Inteligente de Economia em Compras Online
+                Sistema Inteligente de Comparação de Preços | v3.0.0
             </p>
         </div>
     </div>
 
-    <div class="toast" id="toast"></div>
-
     <script>
-        function openBotTelegram() {
-            const botUrl = 'https://t.me/marketingdemilhoes_bot';
-            window.open(botUrl, '_blank');
-            showToast('🤖 Abrindo Bot Marketing de Milhões...', 'info');
-        }
-
-        function copyToClipboard(text, element, label) {
-            const textArea = document.createElement('textarea');
-            textArea.value = text;
-            textArea.style.position = 'fixed';
-            textArea.style.left = '-999999px';
-            document.body.appendChild(textArea);
-            textArea.select();
-            
-            try {
-                document.execCommand('copy');
-                showToast(`✓ ${label} copiado com sucesso!`, 'success');
-                showCopyFeedback(element);
-            } catch (err) {
-                showToast('❌ Erro ao copiar. Tente novamente.', 'error');
-            }
-            
-            document.body.removeChild(textArea);
-        }
-
-        function showCopyFeedback(element) {
-            const originalBg = element.style.background;
-            element.style.background = 'linear-gradient(135deg, #d4edda, #c3e6cb)';
-            
-            setTimeout(() => {
-                element.style.background = originalBg;
-            }, 400);
-        }
-
-        function showToast(message, type = 'success') {
-            const toast = document.getElementById('toast');
-            toast.textContent = message;
-            toast.className = `toast ${type}`;
-            
-            setTimeout(() => {
-                toast.classList.add('show');
-            }, 100);
-            
-            setTimeout(() => {
-                toast.classList.remove('show');
-            }, 3000);
-        }
-
-        function openMarketplace(marketplace) {
-            const urls = {
-                shopee: 'https://shopee.com.br',
-                mercadolivre: 'https://mercadolivre.com.br',
-                amazon: 'https://amazon.com.br',
-                magalu: 'https://magazineluiza.com.br',
-                aliexpress: 'https://pt.aliexpress.com',
-                olist: 'https://www.olist.com.br'
-            };
-            
-            if (urls[marketplace]) {
-                window.open(urls[marketplace], '_blank');
-                showToast(`Abrindo ${marketplace.toUpperCase()}...`, 'info');
-            }
-        }
-
-        function performSearch() {
-            const input = document.getElementById('searchInput');
-            const termo = input.value.trim();
-            
-            if (!termo) {
-                showToast('📝 Digite o nome do produto!', 'error');
-                input.focus();
-                return;
-            }
-            
-            showToast(`🔍 Procurando "${termo}" em todas as lojas...`, 'info');
-            
-            setTimeout(() => {
-                openBotTelegram();
-            }, 1500);
-        }
-
-        function handleSearchEnter(event) {
-            if (event.key === 'Enter') {
-                performSearch();
-            }
-        }
-
-        async function loadStats() {
-            try {
-                const response = await fetch('/api/stats');
-                const data = await response.json();
-                
-                if (data.success) {
-                    updateStats(data.data);
-                    updateStatusIndicator(true);
-                } else {
-                    updateStatsError();
-                    updateStatusIndicator(false);
-                }
-            } catch (error) {
-                console.error('Erro ao carregar stats:', error);
-                updateStatsError();
-                updateStatusIndicator(false);
-            }
-        }
-
-        function updateStats(stats) {
-            animateValue('totalUsers', 0, stats.total_usuarios || 0, 1000);
-            animateValue('clicksToday', 0, stats.cliques_hoje || 0, 1000);
-            
-            const economyElement = document.getElementById('economySaved');
-            economyElement.innerHTML = `<span class="highlight">R$ ${(stats.economia_total || 0).toLocaleString('pt-BR')}</span>`;
-
-            updateTopMarketplaces(stats.top_marketplaces || []);
-        }
-
-        function updateStatsError() {
-            document.getElementById('totalUsers').textContent = '-';
-            document.getElementById('clicksToday').textContent = '-';
-            document.getElementById('economySaved').innerHTML = '<span class="highlight">R$ -</span>';
-        }
-
-        function animateValue(id, start, end, duration) {
-            const element = document.getElementById(id);
-            element.classList.remove('loading');
-            
-            const range = end - start;
-            const increment = range / (duration / 16);
-            let current = start;
-            
-            const timer = setInterval(() => {
-                current += increment;
-                if ((increment > 0 && current >= end) || (increment < 0 && current <= end)) {
-                    current = end;
-                    clearInterval(timer);
-                }
-                element.textContent = Math.round(current).toLocaleString('pt-BR');
-            }, 16);
-        }
-
-        function updateTopMarketplaces(marketplaces) {
-            const container = document.getElementById('topMarketplaces');
-            
-            if (!marketplaces || marketplaces.length === 0) {
-                container.innerHTML = '<p style="text-align: center; color: #999; padding: 20px;">Nenhum dado disponível</p>';
-                return;
-            }
-
-            const maxClicks = Math.max(...marketplaces.map(m => m.cliques), 1);
-            
-            let html = '<div style="padding: 10px 0;">';
-            marketplaces.forEach((mp, index) => {
-                const percentage = (mp.cliques / maxClicks) * 100;
-                const icons = {
-                    'Shopee': '🛍️',
-                    'Mercado Livre': '📦',
-                    'Amazon': '📱',
-                    'Magazine Luiza': '🏬',
-                    'AliExpress': '🌏',
-                    'Olist': '🚀'
-                };
-                
-                html += `
-                    <div style="margin-bottom: 12px;">
-                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 5px;">
-                            <span style="font-size: 13px; font-weight: 600; color: #0f5c3a;">
-                                <span style="font-size: 16px;">${icons[mp.nome] || '📊'}</span> 
-                                ${index + 1}. ${mp.nome}
-                            </span>
-                            <span style="font-size: 13px; font-weight: 600; color: #e74c3c;">
-                                ${mp.cliques} buscas
-                            </span>
-                        </div>
-                        <div style="width: 100%; height: 8px; background: #f0f0f0; border-radius: 10px; overflow: hidden;">
-                            <div style="width: ${percentage}%; height: 100%; background: linear-gradient(90deg, #1d7c4d, #0f5c3a); transition: width 1s ease;"></div>
-                        </div>
-                    </div>
-                `;
-            });
-            html += '</div>';
-            
-            container.innerHTML = html;
-        }
-
-        function updateStatusIndicator(isOnline) {
-            const indicator = document.getElementById('statusIndicator');
-            if (isOnline) {
-                indicator.classList.remove('offline');
-            } else {
-                indicator.classList.add('offline');
-            }
-        }
-
-        window.addEventListener('DOMContentLoaded', () => {
-            console.log('🤖 Marketing de Milhões - Sistema Iniciado');
-            
-            setTimeout(() => {
-                loadStats();
-            }, 500);
-            
-            setInterval(() => {
-                loadStats();
-            }, 30000);
-            
-            setTimeout(() => {
-                showToast('💰 Bem-vindo ao Marketing de Milhões!', 'success');
-            }, 1000);
-        });
-
-        document.addEventListener('keydown', (e) => {
-            if (e.ctrlKey && e.key === 'k') {
-                e.preventDefault();
-                document.getElementById('searchInput').focus();
-            }
-            
-            if (e.ctrlKey && e.key === 't') {
-                e.preventDefault();
-                openBotTelegram();
-            }
-        });
-
-        let clickCount = 0;
-        document.querySelector('.avatar').addEventListener('click', () => {
-            clickCount++;
-            if (clickCount === 5) {
-                showToast('🎉 Cupom especial: ECONOMIZE50 - 50% OFF!', 'success');
-                clickCount = 0;
-            }
-        });
-
         console.log(`
-        ╔═══════════════════════════════════════════════════════╗
-        ║   MARKETING DE MILHÕES - COMPARADOR DE PREÇOS        ║
-        ║   Sistema de Economia em Compras Online              ║
-        ║   Bot: @marketingdemilhoes_bot                       ║
-        ║   Versão: 3.0.0                                      ║
-        ╚═══════════════════════════════════════════════════════╝
-        
-        Atalhos:
-        • Ctrl+K: Focar busca
-        • Ctrl+T: Abrir Telegram
-        • 5 cliques no avatar: Easter egg
+        ╔════════════════════════════════════════════╗
+        ║   MARKETING DE MILHÕES                    ║
+        ║   Comparador de Preços em Tempo Real      ║
+        ║   Bot: @marketingdemilhoes_bot            ║
+        ╚════════════════════════════════════════════╝
         `);
+
+        // Rastreamento de cliques
+        document.querySelectorAll('a').forEach(link => {
+            link.addEventListener('click', function() {
+                console.log('🔗 Link clicado:', this.href);
+            });
+        });
+
+        // Easter egg
+        let clicks = 0;
+        document.querySelector('.avatar').addEventListener('click', () => {
+            clicks++;
+            if (clicks === 5) {
+                alert('🎉 Cupom especial: ECONOMIZE50 - 50% OFF na primeira compra!');
+                clicks = 0;
+            }
+        });
     </script>
 </body>
 </html>
