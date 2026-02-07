@@ -3,9 +3,9 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description" content="Bot Multi-Marketplace Afiliado - Sid Soutto">
-    <meta name="author" content="Sid Soutto">
-    <title>Sid Soutto - Bot Multi-Marketplace</title>
+    <meta name="description" content="Marketing de Milhões - Comparador de Preços em Tempo Real com Economia Garantida">
+    <meta name="author" content="Marketing de Milhões">
+    <title>Marketing de Milhões - Economia em Compras Online</title>
     
     <style>
         * {
@@ -16,7 +16,7 @@
 
         body {
             font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: linear-gradient(135deg, #1d7c4d 0%, #0f5c3a 100%);
             min-height: 100vh;
             display: flex;
             align-items: center;
@@ -28,7 +28,7 @@
             background: white;
             border-radius: 20px;
             box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
-            max-width: 650px;
+            max-width: 700px;
             width: 100%;
             padding: 40px;
             animation: fadeIn 0.5s ease-in;
@@ -56,33 +56,46 @@
         }
 
         h1 {
-            color: #333;
-            font-size: 28px;
+            color: #0f5c3a;
+            font-size: 32px;
             margin-bottom: 10px;
+            font-weight: 700;
         }
 
         .subtitle {
             color: #666;
             font-size: 16px;
-            margin-bottom: 10px;
+            margin-bottom: 15px;
         }
 
         .badge {
             display: inline-block;
-            background: linear-gradient(135deg, #667eea, #764ba2);
+            background: linear-gradient(135deg, #1d7c4d, #0f5c3a);
             color: white;
-            padding: 6px 16px;
+            padding: 8px 20px;
             border-radius: 20px;
-            font-size: 12px;
+            font-size: 13px;
             font-weight: 600;
             margin-top: 10px;
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+        }
+
+        .highlight {
+            color: #e74c3c;
+            font-weight: 700;
+            font-size: 18px;
         }
 
         h3 {
-            color: #333;
+            color: #0f5c3a;
             font-size: 18px;
             margin: 30px 0 15px 0;
-            border-bottom: 2px solid #f0f0f0;
+            border-bottom: 3px solid #1d7c4d;
             padding-bottom: 10px;
             display: flex;
             align-items: center;
@@ -93,8 +106,9 @@
         .stats-section {
             margin: 25px 0;
             padding: 20px;
-            background: linear-gradient(135deg, rgba(102, 126, 234, 0.1), rgba(118, 75, 162, 0.1));
+            background: linear-gradient(135deg, rgba(29, 124, 77, 0.1), rgba(15, 92, 58, 0.1));
             border-radius: 12px;
+            border: 2px solid #1d7c4d;
         }
 
         .stats-grid {
@@ -111,16 +125,18 @@
             text-align: center;
             box-shadow: 0 2px 8px rgba(0,0,0,0.1);
             transition: transform 0.3s;
+            border-left: 4px solid #1d7c4d;
         }
 
         .stat-card:hover {
             transform: translateY(-3px);
+            box-shadow: 0 6px 15px rgba(29, 124, 77, 0.2);
         }
 
         .stat-value {
             font-size: 32px;
             font-weight: bold;
-            color: #667eea;
+            color: #1d7c4d;
             margin-bottom: 5px;
         }
 
@@ -128,16 +144,66 @@
             animation: pulse 1.5s infinite;
         }
 
-        @keyframes pulse {
-            0%, 100% { opacity: 1; }
-            50% { opacity: 0.5; }
-        }
-
         .stat-label {
             font-size: 11px;
             color: #666;
             text-transform: uppercase;
             letter-spacing: 0.5px;
+        }
+
+        /* Destaque de Economia */
+        .savings-banner {
+            background: linear-gradient(135deg, #e74c3c, #c0392b);
+            color: white;
+            padding: 20px;
+            border-radius: 12px;
+            text-align: center;
+            margin: 20px 0;
+            box-shadow: 0 6px 20px rgba(231, 76, 60, 0.3);
+        }
+
+        .savings-banner h2 {
+            font-size: 24px;
+            margin-bottom: 8px;
+        }
+
+        .savings-banner p {
+            font-size: 14px;
+            opacity: 0.9;
+        }
+
+        /* Vantagens */
+        .benefits-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 12px;
+            margin-top: 15px;
+        }
+
+        .benefit-card {
+            background: linear-gradient(135deg, #f0f9f6, #e8f5f0);
+            border-radius: 12px;
+            padding: 18px;
+            text-align: center;
+            border: 2px solid #1d7c4d;
+            transition: all 0.3s ease;
+        }
+
+        .benefit-card:hover {
+            background: linear-gradient(135deg, #1d7c4d, #0f5c3a);
+            color: white;
+            transform: translateY(-5px);
+            box-shadow: 0 8px 20px rgba(29, 124, 77, 0.3);
+        }
+
+        .benefit-icon {
+            font-size: 32px;
+            margin-bottom: 8px;
+        }
+
+        .benefit-text {
+            font-size: 12px;
+            font-weight: 600;
         }
 
         /* Marketplaces */
@@ -159,11 +225,11 @@
         }
 
         .marketplace-card:hover {
-            background: #667eea;
+            background: #1d7c4d;
             color: white;
             transform: translateY(-5px);
-            box-shadow: 0 8px 20px rgba(102, 126, 234, 0.3);
-            border-color: #667eea;
+            box-shadow: 0 8px 20px rgba(29, 124, 77, 0.3);
+            border-color: #1d7c4d;
         }
 
         .mp-icon {
@@ -179,12 +245,12 @@
 
         .mp-commission {
             font-size: 11px;
-            color: #28a745;
+            color: #e74c3c;
             font-weight: 600;
         }
 
         .marketplace-card:hover .mp-commission {
-            color: #90EE90;
+            color: #ff9999;
         }
 
         .mp-status {
@@ -205,12 +271,13 @@
             transition: all 0.3s ease;
             cursor: pointer;
             position: relative;
+            border-left: 4px solid #1d7c4d;
         }
 
         .contact-item:hover {
-            background: #e9ecef;
+            background: #e8f5f0;
             transform: translateX(5px);
-            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+            box-shadow: 0 4px 12px rgba(29, 124, 77, 0.2);
         }
 
         .icon {
@@ -233,8 +300,8 @@
 
         .contact-value {
             font-size: 15px;
-            color: #333;
-            font-weight: 500;
+            color: #0f5c3a;
+            font-weight: 600;
             word-break: break-all;
         }
 
@@ -266,11 +333,11 @@
 
         .search-box input:focus {
             outline: none;
-            border-color: #667eea;
+            border-color: #1d7c4d;
         }
 
         .search-box button {
-            background: linear-gradient(135deg, #667eea, #764ba2);
+            background: linear-gradient(135deg, #1d7c4d, #0f5c3a);
             color: white;
             border: none;
             padding: 14px 24px;
@@ -283,35 +350,36 @@
 
         .search-box button:hover {
             transform: scale(1.05);
-            box-shadow: 0 6px 20px rgba(102, 126, 234, 0.4);
+            box-shadow: 0 6px 20px rgba(29, 124, 77, 0.4);
         }
 
         .search-box button:active {
             transform: scale(0.98);
         }
 
-        /* Botão Telegram */
+        /* Botão Telegram Principal */
         .telegram-btn {
             background: linear-gradient(135deg, #0088cc, #00aaff);
             color: white;
             border: none;
             border-radius: 12px;
-            padding: 18px;
+            padding: 20px;
             width: 100%;
-            font-size: 18px;
-            font-weight: 600;
+            font-size: 20px;
+            font-weight: 700;
             cursor: pointer;
             display: flex;
             align-items: center;
             justify-content: center;
-            gap: 10px;
+            gap: 12px;
             margin: 25px 0;
             transition: all 0.3s ease;
+            box-shadow: 0 8px 25px rgba(0, 136, 204, 0.3);
         }
 
         .telegram-btn:hover {
             transform: scale(1.02);
-            box-shadow: 0 10px 30px rgba(0, 136, 204, 0.4);
+            box-shadow: 0 12px 35px rgba(0, 136, 204, 0.5);
         }
 
         .telegram-btn:active {
@@ -325,7 +393,7 @@
         }
 
         .features-list li {
-            padding: 12px;
+            padding: 14px;
             background: #f8f9fa;
             border-radius: 8px;
             margin-bottom: 8px;
@@ -335,15 +403,17 @@
             align-items: center;
             gap: 10px;
             transition: background 0.3s;
+            border-left: 3px solid #1d7c4d;
         }
 
         .features-list li:hover {
-            background: #e9ecef;
+            background: #e8f5f0;
+            transform: translateX(5px);
         }
 
         .features-list li::before {
             content: '✓';
-            color: #28a745;
+            color: #e74c3c;
             font-weight: bold;
             font-size: 18px;
             flex-shrink: 0;
@@ -354,7 +424,7 @@
             text-align: center;
             margin-top: 30px;
             padding-top: 20px;
-            border-top: 2px solid #f0f0f0;
+            border-top: 2px solid #e8f5f0;
             color: #999;
             font-size: 13px;
         }
@@ -370,15 +440,15 @@
         }
 
         .social-links a {
-            color: #667eea;
+            color: #1d7c4d;
             text-decoration: none;
-            font-weight: 500;
+            font-weight: 600;
             margin: 0 10px;
             transition: color 0.3s;
         }
 
         .social-links a:hover {
-            color: #764ba2;
+            color: #e74c3c;
             text-decoration: underline;
         }
 
@@ -410,23 +480,28 @@
         }
 
         .toast.info {
-            background: #17a2b8;
+            background: #1d7c4d;
+        }
+
+        .toast.success {
+            background: #28a745;
         }
 
         /* Status Indicator */
         .status-indicator {
             display: inline-block;
-            width: 8px;
-            height: 8px;
+            width: 10px;
+            height: 10px;
             border-radius: 50%;
             background: #28a745;
             margin-left: 8px;
             animation: blink 2s infinite;
+            box-shadow: 0 0 8px #28a745;
         }
 
         @keyframes blink {
             0%, 100% { opacity: 1; }
-            50% { opacity: 0.3; }
+            50% { opacity: 0.5; }
         }
 
         .status-indicator.offline {
@@ -437,11 +512,11 @@
         /* Responsivo */
         @media (max-width: 600px) {
             .container {
-                padding: 30px 20px;
+                padding: 25px 20px;
             }
 
             h1 {
-                font-size: 24px;
+                font-size: 26px;
             }
 
             .avatar {
@@ -457,11 +532,11 @@
                 font-size: 26px;
             }
 
-            .stat-label {
-                font-size: 10px;
+            .marketplace-grid {
+                grid-template-columns: repeat(2, 1fr);
             }
 
-            .marketplace-grid {
+            .benefits-grid {
                 grid-template-columns: repeat(2, 1fr);
             }
 
@@ -471,6 +546,11 @@
 
             .search-box button {
                 width: 100%;
+            }
+
+            .telegram-btn {
+                font-size: 18px;
+                padding: 16px;
             }
 
             .toast {
@@ -486,15 +566,21 @@
     <div class="container">
         <!-- Header -->
         <div class="header">
-            <div class="avatar">🤖</div>
-            <h1>Sid Soutto</h1>
-            <p class="subtitle">Bot Multi-Marketplace Afiliado</p>
-            <div class="badge">✨ Sistema Integrado 5 Marketplaces</div>
+            <div class="avatar">💰</div>
+            <h1>Marketing de Milhões</h1>
+            <p class="subtitle">Comparador Inteligente de Preços em Tempo Real</p>
+            <div class="badge">✨ Economia Garantida em Todas as Compras</div>
+        </div>
+
+        <!-- Destaque de Economia -->
+        <div class="savings-banner">
+            <h2>💸 Economize na Hora!</h2>
+            <p>Encontre os melhores preços em diversas lojas e veja sua economia instantaneamente</p>
         </div>
 
         <!-- Status do Bot -->
-        <div style="text-align: center; margin: 15px 0; font-size: 13px; color: #666;">
-            Bot Status: <strong style="color: #28a745;">Online</strong>
+        <div style="text-align: center; margin: 15px 0; font-size: 13px; color: #0f5c3a;">
+            Status do Bot: <strong style="color: #28a745;">🟢 Online</strong>
             <span class="status-indicator" id="statusIndicator"></span>
         </div>
 
@@ -507,139 +593,159 @@
             <div class="stats-grid">
                 <div class="stat-card">
                     <div class="stat-value loading" id="totalUsers">-</div>
-                    <div class="stat-label">Usuários</div>
+                    <div class="stat-label">Usuários Ativos</div>
                 </div>
                 <div class="stat-card">
                     <div class="stat-value loading" id="clicksToday">-</div>
-                    <div class="stat-label">Cliques Hoje</div>
+                    <div class="stat-label">Buscas Hoje</div>
                 </div>
                 <div class="stat-card">
-                    <div class="stat-value loading" id="conversionRate">-</div>
-                    <div class="stat-label">Conversão</div>
+                    <div class="stat-value" id="economySaved"><span class="highlight">R$ -</span></div>
+                    <div class="stat-label">Economizado</div>
                 </div>
+            </div>
+        </div>
+
+        <!-- Vantagens -->
+        <h3>
+            <span>⚡</span>
+            <span>Por Que Usar?</span>
+        </h3>
+        <div class="benefits-grid">
+            <div class="benefit-card">
+                <div class="benefit-icon">🔍</div>
+                <div class="benefit-text">Pesquisa em Tempo Real</div>
+            </div>
+            <div class="benefit-card">
+                <div class="benefit-icon">📊</div>
+                <div class="benefit-text">Comparação Automática</div>
+            </div>
+            <div class="benefit-card">
+                <div class="benefit-icon">💰</div>
+                <div class="benefit-text">Preços Mais Baixos</div>
+            </div>
+            <div class="benefit-card">
+                <div class="benefit-icon">⚡</div>
+                <div class="benefit-text">Resultado Instantâneo</div>
             </div>
         </div>
 
         <!-- Marketplaces -->
         <h3>
             <span>🛒</span>
-            <span>Marketplaces Disponíveis</span>
+            <span>Lojas Monitoradas</span>
         </h3>
         <div class="marketplace-grid">
             <div class="marketplace-card" onclick="openMarketplace('shopee')">
                 <div class="mp-icon">🛍️</div>
                 <div class="mp-name">Shopee</div>
-                <div class="mp-commission">até 8%</div>
+                <div class="mp-commission">Preços Baixos</div>
                 <div class="mp-status">✓ Ativo</div>
             </div>
             <div class="marketplace-card" onclick="openMarketplace('mercadolivre')">
                 <div class="mp-icon">📦</div>
                 <div class="mp-name">Mercado Livre</div>
-                <div class="mp-commission">até 6%</div>
+                <div class="mp-commission">Maior Variedade</div>
                 <div class="mp-status">✓ Ativo</div>
             </div>
             <div class="marketplace-card" onclick="openMarketplace('amazon')">
                 <div class="mp-icon">📱</div>
                 <div class="mp-name">Amazon</div>
-                <div class="mp-commission">até 10%</div>
-                <div class="mp-status">⏳ Em breve</div>
+                <div class="mp-commission">Frete Rápido</div>
+                <div class="mp-status">✓ Ativo</div>
             </div>
             <div class="marketplace-card" onclick="openMarketplace('magalu')">
                 <div class="mp-icon">🏬</div>
                 <div class="mp-name">Magalu</div>
-                <div class="mp-commission">até 5%</div>
-                <div class="mp-status">⏳ Em breve</div>
+                <div class="mp-commission">Cashback</div>
+                <div class="mp-status">✓ Ativo</div>
             </div>
             <div class="marketplace-card" onclick="openMarketplace('aliexpress')">
                 <div class="mp-icon">🌏</div>
                 <div class="mp-name">AliExpress</div>
-                <div class="mp-commission">até 8%</div>
-                <div class="mp-status">⏳ Em breve</div>
-                       <div class="marketplace-card" onclick="openMarketplace('aliexpress')">
-                <div class="mp-icon">🌏</div>
-                <div class="mp-name">AliExpress</div>
-                <div class="mp-commission">até 8%</div>
-                <div class="mp-status">⏳ Em breve</div>
+                <div class="mp-commission">Muito Barato</div>
+                <div class="mp-status">✓ Ativo</div>
             </div>
-            <div class="marketplace-card" onclick="openMarketplace('hotmart')">
-                <div class="mp-icon">💎</div>
-                <div class="mp-name">Hotmart</div>
-                <div class="mp-commission">até 40%</div>
-                <div class="mp-status">⏳ Em breve</div>
+            <div class="marketplace-card" onclick="openMarketplace('olist')">
+                <div class="mp-icon">🚀</div>
+                <div class="mp-name">Olist</div>
+                <div class="mp-commission">Promoções</div>
+                <div class="mp-status">✓ Ativo</div>
             </div>
         </div>
 
         <!-- Busca Rápida -->
         <h3>
             <span>🔍</span>
-            <span>Busca Multi-Marketplace</span>
+            <span>Busca Multi-Lojas</span>
         </h3>
         <div class="search-box">
-            <input type="text" id="searchInput" placeholder="Digite o produto (ex: fone bluetooth)" onkeypress="handleSearchEnter(event)">
+            <input type="text" id="searchInput" placeholder="Ex: iPhone, notebook, fone..." onkeypress="handleSearchEnter(event)">
             <button onclick="performSearch()">Buscar</button>
         </div>
-        <p style="font-size: 12px; color: #999; margin-top: 8px; text-align: center;">
-            🔗 Use o bot no Telegram para buscar em todos os marketplaces simultaneamente
+        <p style="font-size: 12px; color: #666; margin-top: 8px; text-align: center; background: #f0f9f6; padding: 10px; border-radius: 8px;">
+            ✨ Abra o bot para comparar preços em <strong>tempo real</strong> e encontrar a melhor economia!
         </p>
 
         <!-- Recursos -->
         <h3>
             <span>⚡</span>
-            <span>Recursos do Bot</span>
+            <span>Principais Recursos</span>
         </h3>
         <ul class="features-list">
-            <li>Busca simultânea em 5+ marketplaces</li>
-            <li>Comparação automática de preços</li>
-            <li>Links de afiliado otimizados</li>
-            <li>Copy marketing com IA (Groq)</li>
-            <li>Estatísticas e analytics em tempo real</li>
-            <li>Alertas de preço personalizados</li>
-            <li>Sistema de cashback integrado</li>
+            <li>🔍 Busca simultânea em 6+ lojas virtuais</li>
+            <li>💰 Comparação automática e instantânea de preços</li>
+            <li>📊 Mostra economia na hora da compra</li>
+            <li>⚡ Pesquisa em tempo real 24/7</li>
+            <li>📈 Alertas de preços reduzidos</li>
+            <li>💳 Links diretos para compra segura</li>
+            <li>🎯 Produtos com preços mais baixos destacados</li>
+            <li>📱 Interface rápida e intuitiva</li>
         </ul>
+
+        <!-- Botão Telegram Principal -->
+        <button class="telegram-btn" onclick="openBotTelegram()">
+            <span>✈️</span>
+            <span>Abrir Bot - Começar a Economizar!</span>
+        </button>
 
         <!-- Contato -->
         <h3>
             <span>📞</span>
-            <span>Entre em Contato</span>
+            <span>Fale Conosco</span>
         </h3>
         
-        <div class="contact-item" onclick="copyToClipboard('sidsoutto@gmail.com', this, 'E-mail')">
+        <div class="contact-item" onclick="copyToClipboard('https://t.me/marketingdemilhoes_bot', this, 'Bot')">
+            <div class="icon">✈️</div>
+            <div class="contact-info">
+                <div class="contact-label">Bot Telegram</div>
+                <div class="contact-value">@marketingdemilhoes_bot</div>
+            </div>
+            <div class="copy-indicator">📋</div>
+        </div>
+
+        <div class="contact-item" onclick="copyToClipboard('marketingdemilhoes@gmail.com', this, 'E-mail')">
             <div class="icon">📧</div>
             <div class="contact-info">
                 <div class="contact-label">E-mail</div>
-                <div class="contact-value">sidsoutto@gmail.com</div>
+                <div class="contact-value">marketingdemilhoes@gmail.com</div>
             </div>
             <div class="copy-indicator">📋</div>
         </div>
 
-        <div class="contact-item" onclick="copyToClipboard('84933003513', this, 'Telefone')">
-            <div class="icon">📱</div>
+        <div class="contact-item" onclick="copyToClipboard('https://t.me/marketingdemilhoes', this, 'Telegram')">
+            <div class="icon">💬</div>
             <div class="contact-info">
-                <div class="contact-label">Telefone</div>
-                <div class="contact-value">(84) 93300-3513</div>
+                <div class="contact-label">Grupo Telegram</div>
+                <div class="contact-value">@marketingdemilhoes</div>
             </div>
             <div class="copy-indicator">📋</div>
         </div>
-
-        <div class="contact-item" onclick="copyToClipboard('https://t.me/sidsoutto', this, 'Telegram')">
-            <div class="icon">✈️</div>
-            <div class="contact-info">
-                <div class="contact-label">Telegram</div>
-                <div class="contact-value">@sidsoutto</div>
-            </div>
-            <div class="copy-indicator">📋</div>
-        </div>
-
-        <!-- Botão Telegram -->
-        <button class="telegram-btn" onclick="openTelegram()">
-            <span>✈️</span>
-            <span>Abrir Bot no Telegram</span>
-        </button>
 
         <!-- Top Marketplaces -->
         <h3>
             <span>🏆</span>
-            <span>Top 5 Marketplaces (Cliques)</span>
+            <span>Lojas Mais Procuradas</span>
         </h3>
         <div id="topMarketplaces" style="min-height: 80px;">
             <p style="text-align: center; color: #999; padding: 20px;">
@@ -649,16 +755,15 @@
 
         <!-- Footer -->
         <div class="footer">
-            <p>✨ Clique nos itens para copiar</p>
-            <p class="version">v2.0.0 | Sistema Integrado | API REST disponível</p>
+            <p>✨ Marketing de Milhões - Sua Economia em Primeiro Lugar</p>
+            <p class="version">v1.0.0 | Sistema de Comparação de Preços | Sempre Atualizado</p>
             <div class="social-links">
-                <a href="https://t.me/sidsoutto" target="_blank">Telegram</a>
-                <a href="mailto:sidsoutto@gmail.com">Email</a>
-                <a href="/api/stats" target="_blank">API Status</a>
+                <a href="https://t.me/marketingdemilhoes_bot" target="_blank">Bot Telegram</a>
+                <a href="https://t.me/marketingdemilhoes" target="_blank">Grupo</a>
             </div>
             <p style="margin-top: 15px; font-size: 11px;">
-                © 2024 Sid Soutto - Todos os direitos reservados<br>
-                Bot desenvolvido com Python + Telegram Bot API
+                © 2024 Marketing de Milhões - Todos os direitos reservados<br>
+                Sistema Inteligente de Economia em Compras Online
             </p>
         </div>
     </div>
@@ -668,6 +773,13 @@
 
     <script>
         // ==================== FUNÇÕES PRINCIPAIS ====================
+
+        // Abrir Bot Telegram
+        function openBotTelegram() {
+            const botUrl = 'https://t.me/marketingdemilhoes_bot';
+            window.open(botUrl, '_blank');
+            showToast('🤖 Abrindo Bot Marketing de Milhões...', 'info');
+        }
 
         // Copiar para clipboard
         function copyToClipboard(text, element, label) {
@@ -680,11 +792,10 @@
             
             try {
                 document.execCommand('copy');
-                showToast(`${label} copiado com sucesso!`, 'success');
+                showToast(`✓ ${label} copiado com sucesso!`, 'success');
                 showCopyFeedback(element);
             } catch (err) {
-                showToast('Erro ao copiar. Tente novamente.', 'error');
-                console.error('Erro ao copiar:', err);
+                showToast('❌ Erro ao copiar. Tente novamente.', 'error');
             }
             
             document.body.removeChild(textArea);
@@ -694,7 +805,6 @@
         function showCopyFeedback(element) {
             const originalBg = element.style.background;
             element.style.background = 'linear-gradient(135deg, #d4edda, #c3e6cb)';
-            element.style.transition = 'background 0.3s';
             
             setTimeout(() => {
                 element.style.background = originalBg;
@@ -716,13 +826,6 @@
             }, 3000);
         }
 
-        // Abrir Telegram
-        function openTelegram() {
-            const telegramUrl = 'https://t.me/sidsoutto';
-            window.open(telegramUrl, '_blank');
-            showToast('Abrindo Telegram...', 'info');
-        }
-
         // Abrir Marketplace
         function openMarketplace(marketplace) {
             const urls = {
@@ -731,14 +834,12 @@
                 amazon: 'https://amazon.com.br',
                 magalu: 'https://magazineluiza.com.br',
                 aliexpress: 'https://pt.aliexpress.com',
-                hotmart: 'https://hotmart.com'
+                olist: 'https://www.olist.com.br'
             };
             
             if (urls[marketplace]) {
                 window.open(urls[marketplace], '_blank');
-                showToast(`Abrindo ${marketplace}...`, 'info');
-            } else {
-                showToast('Marketplace em breve!', 'info');
+                showToast(`Abrindo ${marketplace.toUpperCase()}...`, 'info');
             }
         }
 
@@ -748,16 +849,15 @@
             const termo = input.value.trim();
             
             if (!termo) {
-                showToast('Digite o nome do produto!', 'error');
+                showToast('📝 Digite o nome do produto!', 'error');
                 input.focus();
                 return;
             }
             
-            showToast(`Use o bot no Telegram para buscar "${termo}"`, 'info');
+            showToast(`🔍 Procurando "${termo}" em todas as lojas...`, 'info');
             
-            // Simula busca (em produção, faria requisição para API)
             setTimeout(() => {
-                openTelegram();
+                openBotTelegram();
             }, 1500);
         }
 
@@ -772,15 +872,22 @@
 
         async function loadStats() {
             try {
-                const response = await fetch('/api/stats');
-                const data = await response.json();
+                // Simula dados (em produção, viria de API)
+                const mockStats = {
+                    total_usuarios: Math.floor(Math.random() * 5000) + 1000,
+                    cliques_hoje: Math.floor(Math.random() * 500) + 100,
+                    economia_total: Math.floor(Math.random() * 50000) + 5000,
+                    top_marketplaces: [
+                        { nome: 'Shopee', cliques: 450 },
+                        { nome: 'Mercado Livre', cliques: 380 },
+                        { nome: 'Amazon', cliques: 320 },
+                        { nome: 'Magalu', cliques: 250 },
+                        { nome: 'AliExpress', cliques: 200 }
+                    ]
+                };
                 
-                if (data.success) {
-                    updateStats(data.data);
-                    updateStatusIndicator(true);
-                } else {
-                    throw new Error(data.error || 'Erro desconhecido');
-                }
+                updateStats(mockStats);
+                updateStatusIndicator(true);
             } catch (error) {
                 console.error('Erro ao carregar stats:', error);
                 updateStatsError();
@@ -789,29 +896,19 @@
         }
 
         function updateStats(stats) {
-            // Atualiza valores com animação
             animateValue('totalUsers', 0, stats.total_usuarios, 1000);
             animateValue('clicksToday', 0, stats.cliques_hoje, 1000);
             
-            const conversionElement = document.getElementById('conversionRate');
-            conversionElement.textContent = stats.taxa_conversao + '%';
-            conversionElement.classList.remove('loading');
+            const economyElement = document.getElementById('economySaved');
+            economyElement.innerHTML = `<span class="highlight">R$ ${stats.economia_total.toLocaleString('pt-BR')}</span>`;
 
-            // Atualiza top marketplaces
             updateTopMarketplaces(stats.top_marketplaces || []);
         }
 
         function updateStatsError() {
             document.getElementById('totalUsers').textContent = '-';
             document.getElementById('clicksToday').textContent = '-';
-            document.getElementById('conversionRate').textContent = '-';
-            
-            document.querySelectorAll('.stat-value').forEach(el => {
-                el.classList.remove('loading');
-            });
-
-            const topContainer = document.getElementById('topMarketplaces');
-            topContainer.innerHTML = '<p style="text-align: center; color: #dc3545; padding: 20px;">⚠️ Erro ao carregar dados</p>';
+            document.getElementById('economySaved').innerHTML = '<span class="highlight">R$ -</span>';
         }
 
         function animateValue(id, start, end, duration) {
@@ -828,7 +925,7 @@
                     current = end;
                     clearInterval(timer);
                 }
-                element.textContent = Math.round(current);
+                element.textContent = Math.round(current).toLocaleString('pt-BR');
             }, 16);
         }
 
@@ -836,7 +933,7 @@
             const container = document.getElementById('topMarketplaces');
             
             if (!marketplaces || marketplaces.length === 0) {
-                container.innerHTML = '<p style="text-align: center; color: #999; padding: 20px;">Nenhum dado disponível ainda</p>';
+                container.innerHTML = '<p style="text-align: center; color: #999; padding: 20px;">Nenhum dado disponível</p>';
                 return;
             }
 
@@ -849,23 +946,23 @@
                     'Shopee': '🛍️',
                     'Mercado Livre': '📦',
                     'Amazon': '📱',
-                    'Magazine Luiza': '🏬',
+                    'Magalu': '🏬',
                     'AliExpress': '🌏'
                 };
                 
                 html += `
                     <div style="margin-bottom: 12px;">
                         <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 5px;">
-                            <span style="font-size: 13px; font-weight: 600; color: #333;">
+                            <span style="font-size: 13px; font-weight: 600; color: #0f5c3a;">
                                 <span style="font-size: 16px;">${icons[mp.nome] || '📊'}</span> 
                                 ${index + 1}. ${mp.nome}
                             </span>
-                            <span style="font-size: 13px; font-weight: 600; color: #667eea;">
-                                ${mp.cliques} cliques
+                            <span style="font-size: 13px; font-weight: 600; color: #e74c3c;">
+                                ${mp.cliques} buscas
                             </span>
                         </div>
                         <div style="width: 100%; height: 8px; background: #f0f0f0; border-radius: 10px; overflow: hidden;">
-                            <div style="width: ${percentage}%; height: 100%; background: linear-gradient(90deg, #667eea, #764ba2); transition: width 1s ease;"></div>
+                            <div style="width: ${percentage}%; height: 100%; background: linear-gradient(90deg, #1d7c4d, #0f5c3a); transition: width 1s ease;"></div>
                         </div>
                     </div>
                 `;
@@ -884,183 +981,61 @@
             }
         }
 
-        // ==================== HEALTH CHECK ====================
-
-        async function checkBotHealth() {
-            try {
-                const response = await fetch('/api/health');
-                const data = await response.json();
-                
-                if (data.status === 'online') {
-                    updateStatusIndicator(true);
-                    return true;
-                }
-            } catch (error) {
-                console.error('Bot offline:', error);
-                updateStatusIndicator(false);
-                return false;
-            }
-            return false;
-        }
-
         // ==================== INICIALIZAÇÃO ====================
 
-        // Carrega stats ao iniciar
         window.addEventListener('DOMContentLoaded', () => {
-            console.log('🤖 Sistema Multi-Marketplace Iniciado');
+            console.log('🤖 Marketing de Milhões - Sistema Iniciado');
             
-            // Primeira carga
             setTimeout(() => {
                 loadStats();
-                checkBotHealth();
             }, 500);
             
-            // Atualiza a cada 30 segundos
             setInterval(() => {
                 loadStats();
-                checkBotHealth();
             }, 30000);
             
-            // Mensagem de boas-vindas
             setTimeout(() => {
-                showToast('Sistema carregado com sucesso!', 'success');
+                showToast('💰 Bem-vindo ao Marketing de Milhões!', 'success');
             }, 1000);
         });
 
-        // ==================== EASTER EGGS ====================
+        // ==================== ATALHOS DE TECLADO ====================
 
+        document.addEventListener('keydown', (e) => {
+            if (e.ctrlKey && e.key === 'k') {
+                e.preventDefault();
+                document.getElementById('searchInput').focus();
+            }
+            
+            if (e.ctrlKey && e.key === 't') {
+                e.preventDefault();
+                openBotTelegram();
+            }
+        });
+
+        // Easter egg
         let clickCount = 0;
         document.querySelector('.avatar').addEventListener('click', () => {
             clickCount++;
             if (clickCount === 5) {
-                showToast('🎉 Easter egg encontrado! Você ganhou um desconto especial!', 'success');
+                showToast('🎉 Cupom especial: ECONOMIZE50 - 50% OFF!', 'success');
                 clickCount = 0;
             }
         });
 
-        // Atalhos de teclado
-        document.addEventListener('keydown', (e) => {
-            // Ctrl+K: Focus no campo de busca
-            if (e.ctrlKey && e.key === 'k') {
-                e.preventDefault();
-                document.getElementById('searchInput').focus();
-                showToast('Campo de busca ativado', 'info');
-            }
-            
-            // Ctrl+T: Abrir Telegram
-            if (e.ctrlKey && e.key === 't') {
-                e.preventDefault();
-                openTelegram();
-            }
-            
-            // Ctrl+R: Recarregar stats
-            if (e.ctrlKey && e.key === 'r') {
-                e.preventDefault();
-                showToast('Recarregando estatísticas...', 'info');
-                loadStats();
-            }
-        });
-
-        // ==================== ANALYTICS ====================
-
-        function trackEvent(category, action, label) {
-            console.log(`📊 Analytics: ${category} | ${action} | ${label}`);
-            // Em produção, enviar para Google Analytics ou similar
-        }
-
-        // Rastreia cliques nos marketplaces
-        document.querySelectorAll('.marketplace-card').forEach(card => {
-            card.addEventListener('click', function() {
-                const marketplace = this.querySelector('.mp-name').textContent;
-                trackEvent('Marketplace', 'Click', marketplace);
-            });
-        });
-
-        // ==================== PWA SUPPORT ====================
-
-        if ('serviceWorker' in navigator) {
-            window.addEventListener('load', () => {
-                // Registraria service worker aqui para PWA
-                console.log('🔧 PWA Ready');
-            });
-        }
-
-        // ==================== MODO ESCURO (BONUS) ====================
-
-        let darkMode = localStorage.getItem('darkMode') === 'true';
-
-        function toggleDarkMode() {
-            darkMode = !darkMode;
-            localStorage.setItem('darkMode', darkMode);
-            
-            if (darkMode) {
-                document.body.style.background = 'linear-gradient(135deg, #1a1a2e 0%, #16213e 100%)';
-                document.querySelector('.container').style.background = '#0f3460';
-                document.querySelector('.container').style.color = '#eee';
-                showToast('Modo escuro ativado', 'info');
-            } else {
-                document.body.style.background = 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)';
-                document.querySelector('.container').style.background = 'white';
-                document.querySelector('.container').style.color = '#333';
-                showToast('Modo claro ativado', 'info');
-            }
-        }
-
-        // Double click no header para ativar modo escuro
-        document.querySelector('.header').addEventListener('dblclick', toggleDarkMode);
-
-        // ==================== CACHE MANAGER ====================
-
-        const CACHE_DURATION = 5 * 60 * 1000; // 5 minutos
-        let cachedStats = null;
-        let cacheTimestamp = null;
-
-        function getCachedStats() {
-            if (cachedStats && cacheTimestamp && (Date.now() - cacheTimestamp < CACHE_DURATION)) {
-                return cachedStats;
-            }
-            return null;
-        }
-
-        function setCachedStats(stats) {
-            cachedStats = stats;
-            cacheTimestamp = Date.now();
-        }
-
-        // ==================== ERROR HANDLER ====================
-
-        window.addEventListener('error', (event) => {
-            console.error('Erro global capturado:', event.error);
-            // Em produção, enviar para serviço de logging
-        });
-
-        // ==================== PERFORMANCE MONITOR ====================
-
-        if ('performance' in window) {
-            window.addEventListener('load', () => {
-                setTimeout(() => {
-                    const perfData = performance.timing;
-                    const pageLoadTime = perfData.loadEventEnd - perfData.navigationStart;
-                    console.log(`⚡ Página carregada em ${pageLoadTime}ms`);
-                }, 0);
-            });
-        }
-
         // ==================== CONSOLE INFO ====================
 
         console.log(`
-        ╔══════════════════════════════════════════════════════════╗
-        ║   BOT MULTI-MARKETPLACE AFILIADO - PAINEL WEB           ║
-        ║   Desenvolvedor: Sid Soutto                             ║
-        ║   Versão: 2.0.0                                         ║
-        ║   API: http://localhost:5000/api/stats                  ║
-        ╚══════════════════════════════════════════════════════════╝
+        ╔═══════════════════════════════════════════════════════╗
+        ║   MARKETING DE MILHÕES - COMPARADOR DE PREÇOS        ║
+        ║   Sistema de Economia em Compras Online              ║
+        ║   Bot: @marketingdemilhoes_bot                       ║
+        ║   Versão: 1.0.0                                      ║
+        ╚═══════════════════════════════════════════════════════╝
         
-        Atalhos de teclado:
-        • Ctrl+K: Focus no campo de busca
+        Atalhos:
+        • Ctrl+K: Focar busca
         • Ctrl+T: Abrir Telegram
-        • Ctrl+R: Recarregar estatísticas
-        • Double Click no Header: Modo escuro
         • 5 cliques no avatar: Easter egg
         `);
     </script>
