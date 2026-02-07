@@ -1,251 +1,884 @@
-<!DOCTYPE html>
-<html lang="pt-BR">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Sid Soutto - Contato</title>
-    <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
+"""
+BOT MULTI-MARKETPLACE AFILIADO PROFISSIONAL + SERVIDOR WEB
+Integração completa: Shopee, Amazon, Mercado Livre, Magazine Luiza, AliExpress, Hotmart
+Sistema completo para maximizar conversões e comissões + Site integrado
+"""
 
-        body {
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            min-height: 100vh;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            padding: 20px;
-        }
+import os
+import json
+import logging
+import asyncio
+import aiohttp
+import re
+from datetime import datetime, timedelta
+from typing import List, Dict, Optional
+from dataclasses import dataclass, field
+from collections import defaultdict, deque
+from urllib.parse import quote_plus, urlencode
+import random
+from dotenv import load_dotenv
+from telegram import Update, InlineKeyboardButton, InlineKeyboardMarkup
+from telegram.ext import (
+    Application, CommandHandler, CallbackQueryHandler,
+    MessageHandler, filters, ContextTypes
+)
+from bs4 import BeautifulSoup
+import sqlite3
+from time import time
+import threading
 
-        .container {
-            background: white;
-            border-radius: 20px;
-            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
-            max-width: 500px;
-            width: 100%;
-            padding: 40px;
-            animation: fadeIn 0.5s ease-in;
-        }
+# Flask para servidor web
+from flask import Flask, render_template_string, jsonify, request
+from flask_cors import CORS
 
-        @keyframes fadeIn {
-            from {
-                opacity: 0;
-                transform: translateY(20px);
-            }
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
-        }
+logging.basicConfig(
+    format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
+    level=logging.INFO,
+    handlers=[
+        logging.FileHandler('bot_multi_afiliado.log', encoding='utf-8'),
+        logging.StreamHandler()
+    ]
+)
+logger = logging.getLogger(__name__)
 
-        .header {
-            text-align: center;
-            margin-bottom: 30px;
-        }
+load_dotenv()
 
-        .avatar {
-            font-size: 80px;
-            margin-bottom: 15px;
-            animation: bounce 2s infinite;
-        }
+# ==================== DATACLASSES ====================
 
-        @keyframes bounce {
-            0%, 100% { transform: translateY(0); }
-            50% { transform: translateY(-10px); }
-        }
+@dataclass
+class Produto:
+    id: str
+    nome: str
+    preco: float
+    preco_original: float
+    desconto: float
+    url: str
+    url_afiliado: str
+    imagem: str
+    vendas: int
+    avaliacao: float
+    num_avaliacoes: int
+    loja: str
+    loja_id: str
+    categoria: str
+    estoque: int
+    marketplace: str
+    frete_gratis: bool
+    cupom: Optional[str] = None
+    cashback: float = 0
+    score_conversao: float = 0
+    comissao_percentual: float = 0
 
-        h1 {
-            color: #333;
-            font-size: 28px;
-            margin-bottom: 10px;
-        }
+@dataclass
+class Usuario:
+    user_id: int
+    username: str
+    nome: str
+    data_registro: datetime
+    produtos_visualizados: int = 0
+    links_clicados: int = 0
+    alertas_ativos: int = 0
+    preferencias: List[str] = field(default_factory=list)
+    marketplaces_favoritos: List[str] = field(default_factory=list)
+    ultima_interacao: datetime = None
+    nivel_engajamento: str = "novo"
 
-        .subtitle {
-            color: #666;
-            font-size: 16px;
-        }
+# ==================== DATABASE ====================
 
-        .contact-section {
-            margin-top: 30px;
-        }
-
-        .contact-item {
-            background: #f8f9fa;
-            border-radius: 12px;
-            padding: 20px;
-            margin-bottom: 15px;
-            display: flex;
-            align-items: center;
-            gap: 15px;
-            transition: all 0.3s ease;
-            cursor: pointer;
-        }
-
-        .contact-item:hover {
-            background: #e9ecef;
-            transform: translateX(5px);
-        }
-
-        .icon {
-            font-size: 30px;
-            min-width: 40px;
-            text-align: center;
-        }
-
-        .contact-info {
-            flex: 1;
-        }
-
-        .contact-label {
-            font-size: 12px;
-            color: #666;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-            margin-bottom: 5px;
-        }
-
-        .contact-value {
-            font-size: 16px;
-            color: #333;
-            font-weight: 500;
-            word-break: break-all;
-        }
-
-        .telegram-btn {
-            background: linear-gradient(135deg, #0088cc, #00aaff);
-            color: white;
-            border: none;
-            border-radius: 12px;
-            padding: 18px;
-            width: 100%;
-            font-size: 18px;
-            font-weight: 600;
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 10px;
-            margin-top: 25px;
-            transition: all 0.3s ease;
-        }
-
-        .telegram-btn:hover {
-            transform: scale(1.02);
-            box-shadow: 0 10px 25px rgba(0, 136, 204, 0.3);
-        }
-
-        .telegram-btn:active {
-            transform: scale(0.98);
-        }
-
-        .footer {
-            text-align: center;
-            margin-top: 30px;
-            padding-top: 20px;
-            border-top: 2px solid #f0f0f0;
-            color: #999;
-            font-size: 14px;
-        }
-
-        @media (max-width: 480px) {
-            .container {
-                padding: 30px 20px;
-            }
-
-            h1 {
-                font-size: 24px;
-            }
-
-            .avatar {
-                font-size: 60px;
-            }
-
-            .contact-value {
-                font-size: 14px;
-            }
-        }
-    </style>
-</head>
-<body>
-    <div class="container">
-        <div class="header">
-            <div class="avatar">👤</div>
-            <h1>Sid Soutto</h1>
-            <p class="subtitle">Entre em contato comigo</p>
-        </div>
-
-        <div class="contact-section">
-            <div class="contact-item" onclick="copyToClipboard('sidsoutto@gmail.com', this)">
-                <div class="icon">📧</div>
-                <div class="contact-info">
-                    <div class="contact-label">E-mail</div>
-                    <div class="contact-value">sidsoutto@gmail.com</div>
-                </div>
-            </div>
-
-            <div class="contact-item" onclick="copyToClipboard('84933003513', this)">
-                <div class="icon">📱</div>
-                <div class="contact-info">
-                    <div class="contact-label">Telefone</div>
-                    <div class="contact-value">(84) 93300-3513</div>
-                </div>
-            </div>
-
-            <div class="contact-item" onclick="copyToClipboard('https://t.me/sidsoutto', this)">
-                <div class="icon">✈️</div>
-                <div class="contact-info">
-                    <div class="contact-label">Telegram</div>
-                    <div class="contact-value">@sidsoutto</div>
-                </div>
-            </div>
-        </div>
-
-        <button class="telegram-btn" onclick="openTelegram()">
-            <span>✈️</span>
-            <span>Abrir no Telegram</span>
-        </button>
-
-        <div class="footer">
-            ✨ Clique nos itens para copiar
-        </div>
-    </div>
-
-    <script>
-        function copyToClipboard(text, element) {
-            const textArea = document.createElement('textarea');
-            textArea.value = text;
-            textArea.style.position = 'fixed';
-            textArea.style.left = '-999999px';
-            document.body.appendChild(textArea);
-            textArea.select();
+class DatabaseManager:
+    """Gerenciador de banco de dados SQLite"""
+    
+    def __init__(self, db_path: str = 'multi_afiliado.db'):
+        self.db_path = db_path
+        self._criar_tabelas()
+    
+    def _criar_tabelas(self):
+        """Cria estrutura do banco"""
+        with sqlite3.connect(self.db_path) as conn:
+            cursor = conn.cursor()
             
-            try {
-                document.execCommand('copy');
-                showCopyFeedback(element);
-            } catch (err) {
-                console.log('Erro ao copiar');
+            cursor.execute('''
+                CREATE TABLE IF NOT EXISTS usuarios (
+                    user_id INTEGER PRIMARY KEY,
+                    username TEXT,
+                    nome TEXT,
+                    data_registro TIMESTAMP,
+                    produtos_visualizados INTEGER DEFAULT 0,
+                    links_clicados INTEGER DEFAULT 0,
+                    alertas_ativos INTEGER DEFAULT 0,
+                    preferencias TEXT,
+                    marketplaces_favoritos TEXT,
+                    ultima_interacao TIMESTAMP,
+                    nivel_engajamento TEXT DEFAULT 'novo'
+                )
+            ''')
+            
+            cursor.execute('''
+                CREATE TABLE IF NOT EXISTS produtos_visualizados (
+                    id INTEGER PRIMARY KEY AUTOINCREMENT,
+                    user_id INTEGER,
+                    produto_id TEXT,
+                    marketplace TEXT,
+                    timestamp TIMESTAMP,
+                    FOREIGN KEY (user_id) REFERENCES usuarios(user_id)
+                )
+            ''')
+            
+            cursor.execute('''
+                CREATE TABLE IF NOT EXISTS cliques_afiliado (
+                    id INTEGER PRIMARY KEY AUTOINCREMENT,
+                    user_id INTEGER,
+                    produto_id TEXT,
+                    marketplace TEXT,
+                    url TEXT,
+                    timestamp TIMESTAMP,
+                    converteu BOOLEAN DEFAULT 0,
+                    FOREIGN KEY (user_id) REFERENCES usuarios(user_id)
+                )
+            ''')
+            
+            cursor.execute('''
+                CREATE TABLE IF NOT EXISTS alertas_preco (
+                    id INTEGER PRIMARY KEY AUTOINCREMENT,
+                    user_id INTEGER,
+                    produto_id TEXT,
+                    marketplace TEXT,
+                    preco_alvo REAL,
+                    ativo BOOLEAN DEFAULT 1,
+                    criado_em TIMESTAMP,
+                    FOREIGN KEY (user_id) REFERENCES usuarios(user_id)
+                )
+            ''')
+            
+            conn.commit()
+    
+    def salvar_usuario(self, usuario: Usuario):
+        """Salva ou atualiza usuário"""
+        with sqlite3.connect(self.db_path) as conn:
+            cursor = conn.cursor()
+            cursor.execute('''
+                INSERT OR REPLACE INTO usuarios 
+                (user_id, username, nome, data_registro, produtos_visualizados, 
+                 links_clicados, alertas_ativos, preferencias, marketplaces_favoritos,
+                 ultima_interacao, nivel_engajamento)
+                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+            ''', (
+                usuario.user_id, usuario.username, usuario.nome,
+                usuario.data_registro, usuario.produtos_visualizados,
+                usuario.links_clicados, usuario.alertas_ativos,
+                json.dumps(usuario.preferencias),
+                json.dumps(usuario.marketplaces_favoritos),
+                usuario.ultima_interacao, usuario.nivel_engajamento
+            ))
+            conn.commit()
+    
+    def obter_usuario(self, user_id: int) -> Optional[Usuario]:
+        """Obtém dados do usuário"""
+        with sqlite3.connect(self.db_path) as conn:
+            cursor = conn.cursor()
+            cursor.execute('SELECT * FROM usuarios WHERE user_id = ?', (user_id,))
+            row = cursor.fetchone()
+            
+            if row:
+                return Usuario(
+                    user_id=row[0],
+                    username=row[1],
+                    nome=row[2],
+                    data_registro=datetime.fromisoformat(row[3]),
+                    produtos_visualizados=row[4],
+                    links_clicados=row[5],
+                    alertas_ativos=row[6],
+                    preferencias=json.loads(row[7]) if row[7] else [],
+                    marketplaces_favoritos=json.loads(row[8]) if row[8] else [],
+                    ultima_interacao=datetime.fromisoformat(row[9]) if row[9] else None,
+                    nivel_engajamento=row[10]
+                )
+        return None
+    
+    def registrar_visualizacao(self, user_id: int, produto_id: str, marketplace: str):
+        """Registra visualização de produto"""
+        with sqlite3.connect(self.db_path) as conn:
+            cursor = conn.cursor()
+            cursor.execute('''
+                INSERT INTO produtos_visualizados (user_id, produto_id, marketplace, timestamp)
+                VALUES (?, ?, ?, ?)
+            ''', (user_id, produto_id, marketplace, datetime.now()))
+            
+            cursor.execute('''
+                UPDATE usuarios SET produtos_visualizados = produtos_visualizados + 1,
+                ultima_interacao = ? WHERE user_id = ?
+            ''', (datetime.now(), user_id))
+            
+            conn.commit()
+    
+    def registrar_clique(self, user_id: int, produto_id: str, marketplace: str, url: str):
+        """Registra clique em link de afiliado"""
+        with sqlite3.connect(self.db_path) as conn:
+            cursor = conn.cursor()
+            cursor.execute('''
+                INSERT INTO cliques_afiliado (user_id, produto_id, marketplace, url, timestamp)
+                VALUES (?, ?, ?, ?, ?)
+            ''', (user_id, produto_id, marketplace, url, datetime.now()))
+            
+            cursor.execute('''
+                UPDATE usuarios SET links_clicados = links_clicados + 1,
+                ultima_interacao = ? WHERE user_id = ?
+            ''', (datetime.now(), user_id))
+            
+            conn.commit()
+    
+    def obter_estatisticas(self) -> Dict:
+        """Obtém estatísticas gerais"""
+        with sqlite3.connect(self.db_path) as conn:
+            cursor = conn.cursor()
+            
+            cursor.execute('SELECT COUNT(*) FROM usuarios')
+            total_usuarios = cursor.fetchone()[0]
+            
+            cursor.execute('''
+                SELECT COUNT(*) FROM cliques_afiliado 
+                WHERE DATE(timestamp) = DATE('now')
+            ''')
+            cliques_hoje = cursor.fetchone()[0]
+            
+            cursor.execute('''
+                SELECT COUNT(*) FROM produtos_visualizados 
+                WHERE DATE(timestamp) = DATE('now')
+            ''')
+            visualizacoes_hoje = cursor.fetchone()[0]
+            
+            cursor.execute('''
+                SELECT marketplace, COUNT(*) as cliques FROM cliques_afiliado
+                GROUP BY marketplace ORDER BY cliques DESC
+            ''')
+            top_marketplaces = cursor.fetchall()
+            
+            taxa_conversao = (cliques_hoje / max(visualizacoes_hoje, 1)) * 100
+            
+            return {
+                'total_usuarios': total_usuarios,
+                'cliques_hoje': cliques_hoje,
+                'visualizacoes_hoje': visualizacoes_hoje,
+                'taxa_conversao': round(taxa_conversao, 2),
+                'top_marketplaces': top_marketplaces
             }
+
+# ==================== RATE LIMITER ====================
+
+class RateLimiter:
+    """Limitador de taxa"""
+    
+    def __init__(self, max_requests: int = 30, time_window: int = 60):
+        self.max_requests = max_requests
+        self.time_window = time_window
+        self.requests = deque()
+    
+    async def acquire(self):
+        """Aguarda se necessário"""
+        now = time()
+        
+        while self.requests and self.requests[0] < now - self.time_window:
+            self.requests.popleft()
+        
+        if len(self.requests) >= self.max_requests:
+            sleep_time = self.requests[0] + self.time_window - now + random.uniform(1, 3)
+            await asyncio.sleep(sleep_time)
+            return await self.acquire()
+        
+        await asyncio.sleep(random.uniform(0.5, 2.0))
+        self.requests.append(now)
+
+# ==================== APIS MARKETPLACES ====================
+
+class ShopeeAffiliateAPI:
+    """API Shopee"""
+    
+    def __init__(self):
+        self.base_url = "https://shopee.com.br"
+        self.api_url = "https://shopee.com.br/api/v4/search/search_items"
+        self.affiliate_code = os.getenv('SHOPEE_AFFILIATE_CODE', '')
+        self.rate_limiter = RateLimiter()
+        self.marketplace = "Shopee"
+        self.comissao_media = 8.0
+        
+        self.user_agents = [
+            'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36',
+            'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36'
+        ]
+    
+    def _get_headers(self) -> Dict:
+        return {
+            'User-Agent': random.choice(self.user_agents),
+            'Referer': 'https://shopee.com.br/',
+            'Accept': 'application/json'
+        }
+    
+    def _gerar_link_afiliado(self, shop_id: str, item_id: str) -> str:
+        base_link = f"{self.base_url}/product/{shop_id}/{item_id}"
+        if self.affiliate_code:
+            return f"{base_link}?af_siteid={self.affiliate_code}"
+        return base_link
+    
+    async def buscar_produtos(self, termo: str, limit: int = 20) -> List[Produto]:
+        await self.rate_limiter.acquire()
+        
+        params = {
+            'by': 'relevancy',
+            'keyword': termo,
+            'limit': limit,
+            'newest': 0,
+            'order': 'desc',
+            'page_type': 'search',
+            'version': 2
+        }
+        
+        async with aiohttp.ClientSession() as session:
+            try:
+                async with session.get(self.api_url, params=params, headers=self._get_headers()) as response:
+                    if response.status == 200:
+                        data = await response.json()
+                        return self._parse_produtos(data)
+            except Exception as e:
+                logger.error(f"Erro Shopee: {e}")
+        return []
+    
+    def _parse_produtos(self, data: Dict) -> List[Produto]:
+        produtos = []
+        
+        if 'items' not in data:
+            return produtos
+        
+        for item in data['items']:
+            if 'item_basic' not in item:
+                continue
             
-            document.body.removeChild(textArea);
+            info = item['item_basic']
+            
+            preco_atual = info.get('price', 0) / 100000
+            preco_original = info.get('price_before_discount', preco_atual * 100000) / 100000
+            desconto = info.get('raw_discount', 0)
+            
+            shop_id = str(info.get('shopid', ''))
+            item_id = str(info.get('itemid', ''))
+            
+            produto = Produto(
+                id=item_id,
+                nome=info.get('name', 'Produto'),
+                preco=preco_atual,
+                preco_original=preco_original,
+                desconto=desconto,
+                url=f"{self.base_url}/product/{shop_id}/{item_id}",
+                url_afiliado=self._gerar_link_afiliado(shop_id, item_id),
+                imagem=f"https://cf.shopee.com.br/file/{info.get('image', '')}",
+                vendas=info.get('historical_sold', 0),
+                avaliacao=info.get('item_rating', {}).get('rating_star', 0),
+                num_avaliacoes=sum(info.get('item_rating', {}).get('rating_count', [0])),
+                loja=info.get('shop_name', 'Shopee'),
+                loja_id=shop_id,
+                categoria=str(info.get('catid', '')),
+                estoque=info.get('stock', 0),
+                marketplace=self.marketplace,
+                frete_gratis=info.get('show_free_shipping', False),
+                cupom=info.get('voucher_info', {}).get('voucher_code'),
+                comissao_percentual=self.comissao_media,
+                score_conversao=info.get('historical_sold', 0) * 0.4
+            )
+            
+            produtos.append(produto)
+        
+        return produtos
+
+class MercadoLivreAPI:
+    """API Mercado Livre"""
+    
+    def __init__(self):
+        self.base_url = "https://api.mercadolibre.com"
+        self.affiliate_id = os.getenv('MERCADOLIVRE_AFFILIATE_ID', '')
+        self.marketplace = "Mercado Livre"
+        self.comissao_media = 6.0
+        self.rate_limiter = RateLimiter()
+    
+    async def buscar_produtos(self, termo: str, limit: int = 20) -> List[Produto]:
+        await self.rate_limiter.acquire()
+        
+        url = f"{self.base_url}/sites/MLB/search"
+        params = {
+            'q': termo,
+            'limit': limit,
+            'sort': 'relevance',
+            'condition': 'new'
+        }
+        
+        async with aiohttp.ClientSession() as session:
+            try:
+                async with session.get(url, params=params) as response:
+                    if response.status == 200:
+                        data = await response.json()
+                        return self._parse_produtos(data)
+            except Exception as e:
+                logger.error(f"Erro Mercado Livre: {e}")
+        return []
+    
+    def _parse_produtos(self, data: Dict) -> List[Produto]:
+        produtos = []
+        
+        for item in data.get('results', []):
+            preco_atual = item.get('price', 0)
+            preco_original = item.get('original_price', preco_atual)
+            desconto = ((preco_original - preco_atual) / preco_original * 100) if preco_original > preco_atual else 0
+            
+            produto = Produto(
+                id=item.get('id', ''),
+                nome=item.get('title', 'Produto'),
+                preco=preco_atual,
+                preco_original=preco_original,
+                desconto=desconto,
+                url=item.get('permalink', ''),
+                url_afiliado=self._gerar_link_afiliado(item.get('permalink', '')),
+                imagem=item.get('thumbnail', ''),
+                vendas=item.get('sold_quantity', 0),
+                avaliacao=item.get('reviews', {}).get('rating_average', 0),
+                num_avaliacoes=item.get('reviews', {}).get('total', 0),
+                loja=item.get('seller', {}).get('nickname', 'ML'),
+                loja_id=str(item.get('seller_id', '')),
+                categoria=item.get('category_id', ''),
+                estoque=item.get('available_quantity', 0),
+                marketplace=self.marketplace,
+                frete_gratis=item.get('shipping', {}).get('free_shipping', False),
+                comissao_percentual=self.comissao_media,
+                score_conversao=item.get('sold_quantity', 0) * 0.5
+            )
+            
+            produtos.append(produto)
+        
+        return produtos
+    
+    def _gerar_link_afiliado(self, url: str) -> str:
+        if self.affiliate_id and url:
+            separator = '&' if '?' in url else '?'
+            return f"{url}{separator}pdp_dl=true&affiliate_id={self.affiliate_id}"
+        return url
+
+# ==================== COMPARADOR ====================
+
+class ComparadorMultiMarketplace:
+    """Comparador multi-marketplace"""
+    
+    def __init__(self):
+        self.shopee = ShopeeAffiliateAPI()
+        self.mercadolivre = MercadoLivreAPI()
+    
+    async def buscar_todos_marketplaces(self, termo: str) -> Dict[str, List[Produto]]:
+        """Busca em todos os marketplaces"""
+        tasks = [
+            self.shopee.buscar_produtos(termo, limit=15),
+            self.mercadolivre.buscar_produtos(termo, limit=15)
+        ]
+        
+        resultados = await asyncio.gather(*tasks, return_exceptions=True)
+        
+        return {
+            'Shopee': resultados[0] if isinstance(resultados[0], list) else [],
+            'Mercado Livre': resultados[1] if isinstance(resultados[1], list) else []
+        }
+    
+    def comparar_precos(self, produtos_por_marketplace: Dict[str, List[Produto]]) -> Dict:
+        """Compara preços"""
+        todos_produtos = []
+        for marketplace, produtos in produtos_por_marketplace.items():
+            todos_produtos.extend(produtos)
+        
+        if not todos_produtos:
+            return {'produtos': [], 'melhor_marketplace': None, 'total_produtos': 0, 'distribuicao': {}}
+        
+        produtos_agrupados = defaultdict(list)
+        for p in todos_produtos:
+            nome_normalizado = re.sub(r'[^\w\s]', '', p.nome.lower())[:50]
+            produtos_agrupados[nome_normalizado].append(p)
+        
+        melhores_ofertas = []
+        for nome, grupo in produtos_agrupados.items():
+            if len(grupo) > 1:
+                menor_preco = min(p.preco for p in grupo)
+                melhor = next(p for p in grupo if p.preco == menor_preco)
+                melhores_ofertas.append(melhor)
+        
+        melhores_ofertas.sort(key=lambda x: x.score_conversao, reverse=True)
+        
+        contador_marketplaces = defaultdict(int)
+        for oferta in melhores_ofertas[:20]:
+            contador_marketplaces[oferta.marketplace] += 1
+        
+        melhor_marketplace = max(contador_marketplaces.items(), key=lambda x: x[1])[0] if contador_marketplaces else None
+        
+        return {
+            'produtos': melhores_ofertas[:20],
+            'melhor_marketplace': melhor_marketplace,
+            'total_produtos': len(todos_produtos),
+            'distribuicao': dict(contador_marketplaces)
         }
 
-        function showCopyFeedback(element) {
-            const originalBg = element.style.background;
-            element.style.background = '#d4edda';
-            
-            setTimeout(() => {
-                element.style.background = originalBg;
-            }, 300);
-        }
+# ==================== MARKETING IA ====================
 
-        function openTelegram() {
-            const telegramUrl = 'https://t.me/sidsoutto';
-            window.open(telegramUrl, '_blank');
+class MarketingAIGroq:
+    """Marketing com IA"""
+    
+    def __init__(self):
+        self.api_key = os.getenv('GROQ_API_KEY')
+        self.base_url = 'https://api.groq.com/openai/v1/chat/completions'
+        self.model = 'llama-3.3-70b-versatile'
+    
+    async def gerar_copy_multi_marketplace(self, produto: Produto, produtos_similares: List[Produto]) -> str:
+        precos_por_marketplace = {}
+        for p in produtos_similares:
+            if p.marketplace not in precos_por_marketplace or p.preco < precos_por_marketplace[p.marketplace]:
+                precos_por_marketplace[p.marketplace] = p.preco
+        
+        comparacao_precos = "\n".join([f"- {k}: R$ {v:.2f}" for k, v in precos_por_marketplace.items()])
+        comissao_estimada = produto.preco * (produto.comissao_percentual / 100)
+        
+        prompt = f"""Crie copy DEVASTADORA para venda de produto.
+
+PRODUTO: {produto.nome}
+Marketplace: {produto.marketplace}
+Preco: R$ {produto.preco:.2f}
+Desconto: {produto.desconto:.0f}%
+Vendas: {produto.vendas}
+
+COMPARACAO:
+{comparacao_precos}
+
+REGRAS:
+1. ZERO emojis
+2. Destaque vantagem competitiva
+3. Prova social forte
+4. Urgencia maxima
+5. CTA explosivo
+
+Maximo: 120 palavras."""
+
+        headers = {
+            'Authorization': f'Bearer {self.api_key}',
+            'Content-Type': 'application/json'
         }
-    </script>
-</body>
-</html>
+        
+        payload = {
+            'model': self.model,
+            'messages': [
+                {'role': 'system', 'content': 'Voce e o melhor copywriter de e-commerce.'},
+                {'role': 'user', 'content': prompt}
+            ],
+            'temperature': 1.0,
+            'max_tokens': 400
+        }
+        
+        async with aiohttp.ClientSession() as session:
+            try:
+                async with session.post(self.base_url, json=payload, headers=headers) as response:
+                    if response.status == 200:
+                        data = await response.json()
+                        return data['choices'][0]['message']['content']
+            except Exception as e:
+                logger.error(f"Erro Groq: {e}")
+        
+        return self._copy_fallback(produto)
+    
+    def _copy_fallback(self, produto: Produto) -> str:
+        return f"""OFERTA IMPERDIVEL - {produto.marketplace}
+
+{produto.nome}
+
+PRECO: R$ {produto.preco:.2f}
+DESCONTO: {produto.desconto:.0f}%
+JA VENDEU: {produto.vendas} unidades
+
+{produto.num_avaliacoes} avaliacoes com nota {produto.avaliacao}/5.0
+
+{'FRETE GRATIS' if produto.frete_gratis else 'Frete disponivel'}
+
+CLIQUE AGORA!"""
+
+# ==================== BOT ====================
+
+class BotMultiAfiliado:
+    """Bot principal"""
+    
+    def __init__(self):
+        self.token = os.getenv('TELEGRAM_BOT_TOKEN')
+        self.comparador = ComparadorMultiMarketplace()
+        self.marketing = MarketingAIGroq()
+        self.db = DatabaseManager()
+    
+    async def start(self, update: Update, context: ContextTypes.DEFAULT_TYPE):
+        user = update.effective_user
+        
+        usuario_db = self.db.obter_usuario(user.id)
+        if not usuario_db:
+            usuario = Usuario(
+                user_id=user.id,
+                username=user.username or '',
+                nome=user.first_name,
+                data_registro=datetime.now(),
+                ultima_interacao=datetime.now()
+            )
+            self.db.salvar_usuario(usuario)
+        
+        keyboard = [
+            [InlineKeyboardButton("🔍 Busca Multi-Marketplace", callback_data='buscar_multi')],
+            [InlineKeyboardButton("🏆 Melhores Ofertas", callback_data='melhores_ofertas')],
+            [InlineKeyboardButton("📊 Comparar Precos", callback_data='comparar')],
+            [
+                InlineKeyboardButton("🛒 Shopee", callback_data='mk_shopee'),
+                InlineKeyboardButton("📦 ML", callback_data='mk_ml')
+            ],
+            [InlineKeyboardButton("📈 Estatisticas", callback_data='stats')],
+            [InlineKeyboardButton("⚙️ Meu Perfil", callback_data='perfil')],
+            [InlineKeyboardButton("🌐 Visitar Site", url='https://sidsoutto.netlify.app')]
+        ]
+        reply_markup = InlineKeyboardMarkup(keyboard)
+        
+        mensagem = f"""MULTI-MARKETPLACE AFILIADO PRO
+
+Ola, {user.first_name}!
+
+MARKETPLACES:
+✓ Shopee (comissao 8%)
+✓ Mercado Livre (comissao 6%)
+
+RECURSOS:
+- Busca simultanea
+- Comparacao automatica
+- Marketing IA
+- Links afiliados
+
+Site: https://sidsoutto.netlify.app
+Contato: @sidsoutto
+
+Escolha uma opcao:"""
+        
+        await update.message.reply_text(mensagem, reply_markup=reply_markup)
+    
+    async def callback_handler(self, update: Update, context: ContextTypes.DEFAULT_TYPE):
+        query = update.callback_query
+        await query.answer()
+        
+        if query.data == 'buscar_multi':
+            await query.edit_message_text(
+                "Digite o produto para buscar:\n\n"
+                "Exemplo: fone bluetooth"
+            )
+            context.user_data['modo'] = 'buscar_multi'
+        
+        elif query.data == 'melhores_ofertas':
+            await self.mostrar_melhores_ofertas(update, context)
+        
+        elif query.data == 'comparar':
+            await query.edit_message_text("Digite o produto para comparar:")
+            context.user_data['modo'] = 'comparar'
+        
+        elif query.data == 'stats':
+            await self.mostrar_estatisticas(update, context)
+        
+        elif query.data == 'perfil':
+            await self.mostrar_perfil(update, context)
+    
+    async def processar_mensagem(self, update: Update, context: ContextTypes.DEFAULT_TYPE):
+        modo = context.user_data.get('modo')
+        termo = update.message.text
+        
+        if modo == 'buscar_multi':
+            await update.message.reply_text(f"Buscando '{termo}'...")
+            
+            produtos_por_marketplace = await self.comparador.buscar_todos_marketplaces(termo)
+            resultado = self.comparador.comparar_precos(produtos_por_marketplace)
+            
+            if not resultado['produtos']:
+                await update.message.reply_text("Nenhum produto encontrado.")
+                context.user_data['modo'] = None
+                return
+            
+            mensagem = f"RESULTADOS - {resultado['total_produtos']} produtos\n\n"
+            
+            for i, p in enumerate(resultado['produtos'][:10], 1):
+                mensagem += f"{i}. {p.marketplace} - R$ {p.preco:.2f}\n"
+                mensagem += f"   {p.nome[:50]}\n\n"
+            
+            await update.message.reply_text(mensagem[:4000])
+            
+            for produto in resultado['produtos'][:3]:
+                await self.enviar_produto_completo(update, produto, resultado['produtos'])
+                await asyncio.sleep(1)
+            
+            context.user_data['modo'] = None
+        
+        elif modo == 'comparar':
+            await update.message.reply_text(f"Comparando '{termo}'...")
+            
+            produtos_por_marketplace = await self.comparador.buscar_todos_marketplaces(termo)
+            resultado = self.comparador.comparar_precos(produtos_por_marketplace)
+            
+            if resultado['produtos']:
+                mensagem = "COMPARACAO\n\n"
+                
+                for marketplace, count in resultado['distribuicao'].items():
+                    mensagem += f"{marketplace}: {count} ofertas\n"
+                
+                mensagem += f"\nMelhor: {resultado['melhor_marketplace']}\n\n"
+                
+                for i, p in enumerate(resultado['produtos'][:5], 1):
+                    mensagem += f"{i}. [{p.marketplace}] {p.nome[:40]}\n"
+                    mensagem += f"   R$ {p.preco:.2f}\n\n"
+                
+                await update.message.reply_text(mensagem[:4000])
+            
+            context.user_data['modo'] = None
+    
+    async def enviar_produto_completo(self, update: Update, produto: Produto, produtos_similares: List[Produto]):
+        copy = await self.marketing.gerar_copy_multi_marketplace(produto, produtos_similares)
+        
+        comissao = produto.preco * (produto.comissao_percentual / 100)
+        
+        footer = f"\n\n{produto.marketplace}"
+        footer += f"\nComissao: {produto.comissao_percentual}% (R$ {comissao:.2f})"
+        footer += f"\nVendas: {produto.vendas}"
+        if produto.frete_gratis:
+            footer += "\nFRETE GRATIS"
+        
+        mensagem_final = copy + footer
+        
+        keyboard = [[InlineKeyboardButton("🛒 COMPRAR", url=produto.url_afiliado)]]
+        reply_markup = InlineKeyboardMarkup(keyboard)
+        
+        self.db.registrar_visualizacao(update.effective_user.id, produto.id, produto.marketplace)
+        
+        try:
+            if produto.imagem:
+                await update.effective_message.reply_photo(
+                    photo=produto.imagem,
+                    caption=mensagem_final[:1024],
+                    reply_markup=reply_markup
+                )
+            else:
+                await update.effective_message.reply_text(mensagem_final, reply_markup=reply_markup)
+        except Exception as e:
+            logger.error(f"Erro: {e}")
+    
+    async def mostrar_melhores_ofertas(self, update: Update, context: ContextTypes.DEFAULT_TYPE):
+        query = update.callback_query
+        await query.edit_message_text("Analisando ofertas...")
+        
+        termos = ["smartphone", "notebook"]
+        todas_ofertas = []
+        
+        for termo in termos:
+            produtos = await self.comparador.buscar_todos_marketplaces(termo)
+            resultado = self.comparador.comparar_precos(produtos)
+            todas_ofertas.extend(resultado['produtos'][:3])
+        
+        todas_ofertas.sort(key=lambda x: x.desconto, reverse=True)
+        
+        mensagem = "TOP OFERTAS\n\n"
+        
+        for i, p in enumerate(todas_ofertas[:10], 1):
+            mensagem += f"{i}. {p.marketplace} - {p.nome[:30]}\n"
+            mensagem += f"   R$ {p.preco:.2f} ({p.desconto:.0f}% OFF)\n\n"
+        
+        await query.edit_message_text(mensagem[:4000])
+    
+    async def mostrar_estatisticas(self, update: Update, context: ContextTypes.DEFAULT_TYPE):
+        query = update.callback_query
+        stats = self.db.obter_estatisticas()
+        
+        mensagem = f"""ESTATISTICAS
+
+Total usuarios: {stats['total_usuarios']}
+Visualizacoes hoje: {stats['visualizacoes_hoje']}
+Cliques hoje: {stats['cliques_hoje']}
+Taxa conversao: {stats['taxa_conversao']}%
+
+TOP MARKETPLACES:
+"""
+        
+        for marketplace, cliques in stats['top_marketplaces'][:3]:
+            mensagem += f"- {marketplace}: {cliques} cliques\n"
+        
+        await query.edit_message_text(mensagem)
+    
+    async def mostrar_perfil(self, update: Update, context: ContextTypes.DEFAULT_TYPE):
+        query = update.callback_query
+        usuario = self.db.obter_usuario(update.effective_user.id)
+        
+        if usuario:
+            taxa = (usuario.links_clicados / max(usuario.produtos_visualizados, 1) * 100)
+            mensagem = f"""SEU PERFIL
+
+Nome: {usuario.nome}
+Membro desde: {usuario.data_registro.strftime('%d/%m/%Y')}
+
+Produtos visualizados: {usuario.produtos_visualizados}
+Links clicados: {usuario.links_clicados}
+Taxa conversao: {taxa:.1f}%
+
+Visite nosso site:
+https://sidsoutto.netlify.app"""
+            
+            await query.edit_message_text(mensagem)
+    
+    def run(self):
+        app = Application.builder().token(self.token).build()
+        
+        app.add_handler(CommandHandler("start", self.start))
+        app.add_handler(CallbackQueryHandler(self.callback_handler))
+        app.add_handler(MessageHandler(filters.TEXT & ~filters.COMMAND, self.processar_mensagem))
+        
+        logger.info("=" * 60)
+        logger.info("BOT MULTI-MARKETPLACE INICIADO")
+        logger.info("Site: https://sidsoutto.netlify.app")
+        logger.info("=" * 60)
+        
+        app.run_polling()
+
+# ==================== SERVIDOR WEB ====================
+
+# Instância global do database para o Flask
+db_web = DatabaseManager()
+
+app = Flask(__name__)
+CORS(app)
+
+@app.route('/')
+def index():
+    """Retorna o HTML do site"""
+    # O HTML está no arquivo separado (index.html)
+    return "Bot rodando! Site disponível em /site"
+
+@app.route('/api/stats')
+def api_stats():
+    """API de estatísticas"""
+    stats = db_web.obter_estatisticas()
+    
+    return jsonify({
+        'success': True,
+        'data': {
+            'total_usuarios': stats['total_usuarios'],
+            'cliques_hoje': stats['cliques_hoje'],
+            'visualizacoes_hoje': stats['visualizacoes_hoje'],
+            'taxa_conversao': stats['taxa_conversao'],
+            'top_marketplaces': [{'nome': m[0], 'cliques': m[1]} for m in stats['top_marketplaces'][:5]]
+        }
+    })
+
+def run_web_server():
+    """Inicia servidor Flask"""
+    app.run(host='0.0.0.0', port=int(os.getenv('PORT', 8080)), debug=False)
+
+# ==================== MAIN ====================
+
+if __name__ == '__main__':
+    # Inicia servidor web em thread separada
+    web_thread = threading.Thread(target=run_web_server, daemon=True)
+    web_thread.start()
+    
+    # Inicia bot
+    bot = BotMultiAfiliado()
+    bot.run()
