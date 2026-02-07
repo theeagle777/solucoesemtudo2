@@ -1,884 +1,1068 @@
-"""
-BOT MULTI-MARKETPLACE AFILIADO PROFISSIONAL + SERVIDOR WEB
-Integração completa: Shopee, Amazon, Mercado Livre, Magazine Luiza, AliExpress, Hotmart
-Sistema completo para maximizar conversões e comissões + Site integrado
-"""
-
-import os
-import json
-import logging
-import asyncio
-import aiohttp
-import re
-from datetime import datetime, timedelta
-from typing import List, Dict, Optional
-from dataclasses import dataclass, field
-from collections import defaultdict, deque
-from urllib.parse import quote_plus, urlencode
-import random
-from dotenv import load_dotenv
-from telegram import Update, InlineKeyboardButton, InlineKeyboardMarkup
-from telegram.ext import (
-    Application, CommandHandler, CallbackQueryHandler,
-    MessageHandler, filters, ContextTypes
-)
-from bs4 import BeautifulSoup
-import sqlite3
-from time import time
-import threading
-
-# Flask para servidor web
-from flask import Flask, render_template_string, jsonify, request
-from flask_cors import CORS
-
-logging.basicConfig(
-    format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
-    level=logging.INFO,
-    handlers=[
-        logging.FileHandler('bot_multi_afiliado.log', encoding='utf-8'),
-        logging.StreamHandler()
-    ]
-)
-logger = logging.getLogger(__name__)
-
-load_dotenv()
-
-# ==================== DATACLASSES ====================
-
-@dataclass
-class Produto:
-    id: str
-    nome: str
-    preco: float
-    preco_original: float
-    desconto: float
-    url: str
-    url_afiliado: str
-    imagem: str
-    vendas: int
-    avaliacao: float
-    num_avaliacoes: int
-    loja: str
-    loja_id: str
-    categoria: str
-    estoque: int
-    marketplace: str
-    frete_gratis: bool
-    cupom: Optional[str] = None
-    cashback: float = 0
-    score_conversao: float = 0
-    comissao_percentual: float = 0
-
-@dataclass
-class Usuario:
-    user_id: int
-    username: str
-    nome: str
-    data_registro: datetime
-    produtos_visualizados: int = 0
-    links_clicados: int = 0
-    alertas_ativos: int = 0
-    preferencias: List[str] = field(default_factory=list)
-    marketplaces_favoritos: List[str] = field(default_factory=list)
-    ultima_interacao: datetime = None
-    nivel_engajamento: str = "novo"
-
-# ==================== DATABASE ====================
-
-class DatabaseManager:
-    """Gerenciador de banco de dados SQLite"""
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Bot Multi-Marketplace Afiliado - Sid Soutto">
+    <meta name="author" content="Sid Soutto">
+    <title>Sid Soutto - Bot Multi-Marketplace</title>
     
-    def __init__(self, db_path: str = 'multi_afiliado.db'):
-        self.db_path = db_path
-        self._criar_tabelas()
-    
-    def _criar_tabelas(self):
-        """Cria estrutura do banco"""
-        with sqlite3.connect(self.db_path) as conn:
-            cursor = conn.cursor()
-            
-            cursor.execute('''
-                CREATE TABLE IF NOT EXISTS usuarios (
-                    user_id INTEGER PRIMARY KEY,
-                    username TEXT,
-                    nome TEXT,
-                    data_registro TIMESTAMP,
-                    produtos_visualizados INTEGER DEFAULT 0,
-                    links_clicados INTEGER DEFAULT 0,
-                    alertas_ativos INTEGER DEFAULT 0,
-                    preferencias TEXT,
-                    marketplaces_favoritos TEXT,
-                    ultima_interacao TIMESTAMP,
-                    nivel_engajamento TEXT DEFAULT 'novo'
-                )
-            ''')
-            
-            cursor.execute('''
-                CREATE TABLE IF NOT EXISTS produtos_visualizados (
-                    id INTEGER PRIMARY KEY AUTOINCREMENT,
-                    user_id INTEGER,
-                    produto_id TEXT,
-                    marketplace TEXT,
-                    timestamp TIMESTAMP,
-                    FOREIGN KEY (user_id) REFERENCES usuarios(user_id)
-                )
-            ''')
-            
-            cursor.execute('''
-                CREATE TABLE IF NOT EXISTS cliques_afiliado (
-                    id INTEGER PRIMARY KEY AUTOINCREMENT,
-                    user_id INTEGER,
-                    produto_id TEXT,
-                    marketplace TEXT,
-                    url TEXT,
-                    timestamp TIMESTAMP,
-                    converteu BOOLEAN DEFAULT 0,
-                    FOREIGN KEY (user_id) REFERENCES usuarios(user_id)
-                )
-            ''')
-            
-            cursor.execute('''
-                CREATE TABLE IF NOT EXISTS alertas_preco (
-                    id INTEGER PRIMARY KEY AUTOINCREMENT,
-                    user_id INTEGER,
-                    produto_id TEXT,
-                    marketplace TEXT,
-                    preco_alvo REAL,
-                    ativo BOOLEAN DEFAULT 1,
-                    criado_em TIMESTAMP,
-                    FOREIGN KEY (user_id) REFERENCES usuarios(user_id)
-                )
-            ''')
-            
-            conn.commit()
-    
-    def salvar_usuario(self, usuario: Usuario):
-        """Salva ou atualiza usuário"""
-        with sqlite3.connect(self.db_path) as conn:
-            cursor = conn.cursor()
-            cursor.execute('''
-                INSERT OR REPLACE INTO usuarios 
-                (user_id, username, nome, data_registro, produtos_visualizados, 
-                 links_clicados, alertas_ativos, preferencias, marketplaces_favoritos,
-                 ultima_interacao, nivel_engajamento)
-                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
-            ''', (
-                usuario.user_id, usuario.username, usuario.nome,
-                usuario.data_registro, usuario.produtos_visualizados,
-                usuario.links_clicados, usuario.alertas_ativos,
-                json.dumps(usuario.preferencias),
-                json.dumps(usuario.marketplaces_favoritos),
-                usuario.ultima_interacao, usuario.nivel_engajamento
-            ))
-            conn.commit()
-    
-    def obter_usuario(self, user_id: int) -> Optional[Usuario]:
-        """Obtém dados do usuário"""
-        with sqlite3.connect(self.db_path) as conn:
-            cursor = conn.cursor()
-            cursor.execute('SELECT * FROM usuarios WHERE user_id = ?', (user_id,))
-            row = cursor.fetchone()
-            
-            if row:
-                return Usuario(
-                    user_id=row[0],
-                    username=row[1],
-                    nome=row[2],
-                    data_registro=datetime.fromisoformat(row[3]),
-                    produtos_visualizados=row[4],
-                    links_clicados=row[5],
-                    alertas_ativos=row[6],
-                    preferencias=json.loads(row[7]) if row[7] else [],
-                    marketplaces_favoritos=json.loads(row[8]) if row[8] else [],
-                    ultima_interacao=datetime.fromisoformat(row[9]) if row[9] else None,
-                    nivel_engajamento=row[10]
-                )
-        return None
-    
-    def registrar_visualizacao(self, user_id: int, produto_id: str, marketplace: str):
-        """Registra visualização de produto"""
-        with sqlite3.connect(self.db_path) as conn:
-            cursor = conn.cursor()
-            cursor.execute('''
-                INSERT INTO produtos_visualizados (user_id, produto_id, marketplace, timestamp)
-                VALUES (?, ?, ?, ?)
-            ''', (user_id, produto_id, marketplace, datetime.now()))
-            
-            cursor.execute('''
-                UPDATE usuarios SET produtos_visualizados = produtos_visualizados + 1,
-                ultima_interacao = ? WHERE user_id = ?
-            ''', (datetime.now(), user_id))
-            
-            conn.commit()
-    
-    def registrar_clique(self, user_id: int, produto_id: str, marketplace: str, url: str):
-        """Registra clique em link de afiliado"""
-        with sqlite3.connect(self.db_path) as conn:
-            cursor = conn.cursor()
-            cursor.execute('''
-                INSERT INTO cliques_afiliado (user_id, produto_id, marketplace, url, timestamp)
-                VALUES (?, ?, ?, ?, ?)
-            ''', (user_id, produto_id, marketplace, url, datetime.now()))
-            
-            cursor.execute('''
-                UPDATE usuarios SET links_clicados = links_clicados + 1,
-                ultima_interacao = ? WHERE user_id = ?
-            ''', (datetime.now(), user_id))
-            
-            conn.commit()
-    
-    def obter_estatisticas(self) -> Dict:
-        """Obtém estatísticas gerais"""
-        with sqlite3.connect(self.db_path) as conn:
-            cursor = conn.cursor()
-            
-            cursor.execute('SELECT COUNT(*) FROM usuarios')
-            total_usuarios = cursor.fetchone()[0]
-            
-            cursor.execute('''
-                SELECT COUNT(*) FROM cliques_afiliado 
-                WHERE DATE(timestamp) = DATE('now')
-            ''')
-            cliques_hoje = cursor.fetchone()[0]
-            
-            cursor.execute('''
-                SELECT COUNT(*) FROM produtos_visualizados 
-                WHERE DATE(timestamp) = DATE('now')
-            ''')
-            visualizacoes_hoje = cursor.fetchone()[0]
-            
-            cursor.execute('''
-                SELECT marketplace, COUNT(*) as cliques FROM cliques_afiliado
-                GROUP BY marketplace ORDER BY cliques DESC
-            ''')
-            top_marketplaces = cursor.fetchall()
-            
-            taxa_conversao = (cliques_hoje / max(visualizacoes_hoje, 1)) * 100
-            
-            return {
-                'total_usuarios': total_usuarios,
-                'cliques_hoje': cliques_hoje,
-                'visualizacoes_hoje': visualizacoes_hoje,
-                'taxa_conversao': round(taxa_conversao, 2),
-                'top_marketplaces': top_marketplaces
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        .container {
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            max-width: 650px;
+            width: 100%;
+            padding: 40px;
+            animation: fadeIn 0.5s ease-in;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .avatar {
+            font-size: 80px;
+            margin-bottom: 15px;
+            animation: bounce 2s infinite;
+        }
+
+        @keyframes bounce {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-10px); }
+        }
+
+        h1 {
+            color: #333;
+            font-size: 28px;
+            margin-bottom: 10px;
+        }
+
+        .subtitle {
+            color: #666;
+            font-size: 16px;
+            margin-bottom: 10px;
+        }
+
+        .badge {
+            display: inline-block;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+            padding: 6px 16px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 600;
+            margin-top: 10px;
+        }
+
+        h3 {
+            color: #333;
+            font-size: 18px;
+            margin: 30px 0 15px 0;
+            border-bottom: 2px solid #f0f0f0;
+            padding-bottom: 10px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        /* Estatísticas */
+        .stats-section {
+            margin: 25px 0;
+            padding: 20px;
+            background: linear-gradient(135deg, rgba(102, 126, 234, 0.1), rgba(118, 75, 162, 0.1));
+            border-radius: 12px;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 15px;
+            margin-top: 15px;
+        }
+
+        .stat-card {
+            background: white;
+            border-radius: 12px;
+            padding: 18px 12px;
+            text-align: center;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            transition: transform 0.3s;
+        }
+
+        .stat-card:hover {
+            transform: translateY(-3px);
+        }
+
+        .stat-value {
+            font-size: 32px;
+            font-weight: bold;
+            color: #667eea;
+            margin-bottom: 5px;
+        }
+
+        .stat-value.loading {
+            animation: pulse 1.5s infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+        }
+
+        .stat-label {
+            font-size: 11px;
+            color: #666;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        /* Marketplaces */
+        .marketplace-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
+            gap: 12px;
+            margin-top: 15px;
+        }
+
+        .marketplace-card {
+            background: #f8f9fa;
+            border-radius: 12px;
+            padding: 20px 12px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            border: 2px solid transparent;
+        }
+
+        .marketplace-card:hover {
+            background: #667eea;
+            color: white;
+            transform: translateY(-5px);
+            box-shadow: 0 8px 20px rgba(102, 126, 234, 0.3);
+            border-color: #667eea;
+        }
+
+        .mp-icon {
+            font-size: 36px;
+            margin-bottom: 8px;
+        }
+
+        .mp-name {
+            font-size: 13px;
+            font-weight: 600;
+            margin-bottom: 5px;
+        }
+
+        .mp-commission {
+            font-size: 11px;
+            color: #28a745;
+            font-weight: 600;
+        }
+
+        .marketplace-card:hover .mp-commission {
+            color: #90EE90;
+        }
+
+        .mp-status {
+            font-size: 10px;
+            margin-top: 5px;
+            opacity: 0.7;
+        }
+
+        /* Contatos */
+        .contact-item {
+            background: #f8f9fa;
+            border-radius: 12px;
+            padding: 18px;
+            margin-bottom: 12px;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            transition: all 0.3s ease;
+            cursor: pointer;
+            position: relative;
+        }
+
+        .contact-item:hover {
+            background: #e9ecef;
+            transform: translateX(5px);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+        }
+
+        .icon {
+            font-size: 28px;
+            min-width: 40px;
+            text-align: center;
+        }
+
+        .contact-info {
+            flex: 1;
+        }
+
+        .contact-label {
+            font-size: 11px;
+            color: #666;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 5px;
+        }
+
+        .contact-value {
+            font-size: 15px;
+            color: #333;
+            font-weight: 500;
+            word-break: break-all;
+        }
+
+        .copy-indicator {
+            font-size: 18px;
+            opacity: 0.5;
+            transition: opacity 0.3s;
+        }
+
+        .contact-item:hover .copy-indicator {
+            opacity: 1;
+        }
+
+        /* Busca */
+        .search-box {
+            display: flex;
+            gap: 10px;
+            margin-top: 15px;
+        }
+
+        .search-box input {
+            flex: 1;
+            padding: 14px;
+            border: 2px solid #e9ecef;
+            border-radius: 10px;
+            font-size: 14px;
+            transition: border-color 0.3s;
+        }
+
+        .search-box input:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+
+        .search-box button {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+            border: none;
+            padding: 14px 24px;
+            border-radius: 10px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            white-space: nowrap;
+        }
+
+        .search-box button:hover {
+            transform: scale(1.05);
+            box-shadow: 0 6px 20px rgba(102, 126, 234, 0.4);
+        }
+
+        .search-box button:active {
+            transform: scale(0.98);
+        }
+
+        /* Botão Telegram */
+        .telegram-btn {
+            background: linear-gradient(135deg, #0088cc, #00aaff);
+            color: white;
+            border: none;
+            border-radius: 12px;
+            padding: 18px;
+            width: 100%;
+            font-size: 18px;
+            font-weight: 600;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            margin: 25px 0;
+            transition: all 0.3s ease;
+        }
+
+        .telegram-btn:hover {
+            transform: scale(1.02);
+            box-shadow: 0 10px 30px rgba(0, 136, 204, 0.4);
+        }
+
+        .telegram-btn:active {
+            transform: scale(0.98);
+        }
+
+        /* Recursos */
+        .features-list {
+            list-style: none;
+            padding: 0;
+        }
+
+        .features-list li {
+            padding: 12px;
+            background: #f8f9fa;
+            border-radius: 8px;
+            margin-bottom: 8px;
+            font-size: 14px;
+            color: #333;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            transition: background 0.3s;
+        }
+
+        .features-list li:hover {
+            background: #e9ecef;
+        }
+
+        .features-list li::before {
+            content: '✓';
+            color: #28a745;
+            font-weight: bold;
+            font-size: 18px;
+            flex-shrink: 0;
+        }
+
+        /* Footer */
+        .footer {
+            text-align: center;
+            margin-top: 30px;
+            padding-top: 20px;
+            border-top: 2px solid #f0f0f0;
+            color: #999;
+            font-size: 13px;
+        }
+
+        .version {
+            font-size: 11px;
+            color: #ccc;
+            margin: 8px 0;
+        }
+
+        .social-links {
+            margin-top: 12px;
+        }
+
+        .social-links a {
+            color: #667eea;
+            text-decoration: none;
+            font-weight: 500;
+            margin: 0 10px;
+            transition: color 0.3s;
+        }
+
+        .social-links a:hover {
+            color: #764ba2;
+            text-decoration: underline;
+        }
+
+        /* Toast */
+        .toast {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            background: #28a745;
+            color: white;
+            padding: 16px 26px;
+            border-radius: 10px;
+            box-shadow: 0 6px 20px rgba(0,0,0,0.3);
+            opacity: 0;
+            transform: translateY(20px);
+            transition: all 0.3s ease;
+            z-index: 1000;
+            font-weight: 500;
+            max-width: 300px;
+        }
+
+        .toast.show {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .toast.error {
+            background: #dc3545;
+        }
+
+        .toast.info {
+            background: #17a2b8;
+        }
+
+        /* Status Indicator */
+        .status-indicator {
+            display: inline-block;
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: #28a745;
+            margin-left: 8px;
+            animation: blink 2s infinite;
+        }
+
+        @keyframes blink {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.3; }
+        }
+
+        .status-indicator.offline {
+            background: #dc3545;
+            animation: none;
+        }
+
+        /* Responsivo */
+        @media (max-width: 600px) {
+            .container {
+                padding: 30px 20px;
             }
 
-# ==================== RATE LIMITER ====================
+            h1 {
+                font-size: 24px;
+            }
 
-class RateLimiter:
-    """Limitador de taxa"""
-    
-    def __init__(self, max_requests: int = 30, time_window: int = 60):
-        self.max_requests = max_requests
-        self.time_window = time_window
-        self.requests = deque()
-    
-    async def acquire(self):
-        """Aguarda se necessário"""
-        now = time()
-        
-        while self.requests and self.requests[0] < now - self.time_window:
-            self.requests.popleft()
-        
-        if len(self.requests) >= self.max_requests:
-            sleep_time = self.requests[0] + self.time_window - now + random.uniform(1, 3)
-            await asyncio.sleep(sleep_time)
-            return await self.acquire()
-        
-        await asyncio.sleep(random.uniform(0.5, 2.0))
-        self.requests.append(now)
+            .avatar {
+                font-size: 60px;
+            }
 
-# ==================== APIS MARKETPLACES ====================
+            .stats-grid {
+                grid-template-columns: repeat(3, 1fr);
+                gap: 10px;
+            }
 
-class ShopeeAffiliateAPI:
-    """API Shopee"""
-    
-    def __init__(self):
-        self.base_url = "https://shopee.com.br"
-        self.api_url = "https://shopee.com.br/api/v4/search/search_items"
-        self.affiliate_code = os.getenv('SHOPEE_AFFILIATE_CODE', '')
-        self.rate_limiter = RateLimiter()
-        self.marketplace = "Shopee"
-        self.comissao_media = 8.0
-        
-        self.user_agents = [
-            'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36',
-            'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36'
-        ]
-    
-    def _get_headers(self) -> Dict:
-        return {
-            'User-Agent': random.choice(self.user_agents),
-            'Referer': 'https://shopee.com.br/',
-            'Accept': 'application/json'
+            .stat-value {
+                font-size: 26px;
+            }
+
+            .stat-label {
+                font-size: 10px;
+            }
+
+            .marketplace-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+
+            .search-box {
+                flex-direction: column;
+            }
+
+            .search-box button {
+                width: 100%;
+            }
+
+            .toast {
+                bottom: 20px;
+                right: 20px;
+                left: 20px;
+                max-width: none;
+            }
         }
-    
-    def _gerar_link_afiliado(self, shop_id: str, item_id: str) -> str:
-        base_link = f"{self.base_url}/product/{shop_id}/{item_id}"
-        if self.affiliate_code:
-            return f"{base_link}?af_siteid={self.affiliate_code}"
-        return base_link
-    
-    async def buscar_produtos(self, termo: str, limit: int = 20) -> List[Produto]:
-        await self.rate_limiter.acquire()
-        
-        params = {
-            'by': 'relevancy',
-            'keyword': termo,
-            'limit': limit,
-            'newest': 0,
-            'order': 'desc',
-            'page_type': 'search',
-            'version': 2
-        }
-        
-        async with aiohttp.ClientSession() as session:
-            try:
-                async with session.get(self.api_url, params=params, headers=self._get_headers()) as response:
-                    if response.status == 200:
-                        data = await response.json()
-                        return self._parse_produtos(data)
-            except Exception as e:
-                logger.error(f"Erro Shopee: {e}")
-        return []
-    
-    def _parse_produtos(self, data: Dict) -> List[Produto]:
-        produtos = []
-        
-        if 'items' not in data:
-            return produtos
-        
-        for item in data['items']:
-            if 'item_basic' not in item:
-                continue
-            
-            info = item['item_basic']
-            
-            preco_atual = info.get('price', 0) / 100000
-            preco_original = info.get('price_before_discount', preco_atual * 100000) / 100000
-            desconto = info.get('raw_discount', 0)
-            
-            shop_id = str(info.get('shopid', ''))
-            item_id = str(info.get('itemid', ''))
-            
-            produto = Produto(
-                id=item_id,
-                nome=info.get('name', 'Produto'),
-                preco=preco_atual,
-                preco_original=preco_original,
-                desconto=desconto,
-                url=f"{self.base_url}/product/{shop_id}/{item_id}",
-                url_afiliado=self._gerar_link_afiliado(shop_id, item_id),
-                imagem=f"https://cf.shopee.com.br/file/{info.get('image', '')}",
-                vendas=info.get('historical_sold', 0),
-                avaliacao=info.get('item_rating', {}).get('rating_star', 0),
-                num_avaliacoes=sum(info.get('item_rating', {}).get('rating_count', [0])),
-                loja=info.get('shop_name', 'Shopee'),
-                loja_id=shop_id,
-                categoria=str(info.get('catid', '')),
-                estoque=info.get('stock', 0),
-                marketplace=self.marketplace,
-                frete_gratis=info.get('show_free_shipping', False),
-                cupom=info.get('voucher_info', {}).get('voucher_code'),
-                comissao_percentual=self.comissao_media,
-                score_conversao=info.get('historical_sold', 0) * 0.4
-            )
-            
-            produtos.append(produto)
-        
-        return produtos
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Header -->
+        <div class="header">
+            <div class="avatar">🤖</div>
+            <h1>Sid Soutto</h1>
+            <p class="subtitle">Bot Multi-Marketplace Afiliado</p>
+            <div class="badge">✨ Sistema Integrado 5 Marketplaces</div>
+        </div>
 
-class MercadoLivreAPI:
-    """API Mercado Livre"""
-    
-    def __init__(self):
-        self.base_url = "https://api.mercadolibre.com"
-        self.affiliate_id = os.getenv('MERCADOLIVRE_AFFILIATE_ID', '')
-        self.marketplace = "Mercado Livre"
-        self.comissao_media = 6.0
-        self.rate_limiter = RateLimiter()
-    
-    async def buscar_produtos(self, termo: str, limit: int = 20) -> List[Produto]:
-        await self.rate_limiter.acquire()
-        
-        url = f"{self.base_url}/sites/MLB/search"
-        params = {
-            'q': termo,
-            'limit': limit,
-            'sort': 'relevance',
-            'condition': 'new'
-        }
-        
-        async with aiohttp.ClientSession() as session:
-            try:
-                async with session.get(url, params=params) as response:
-                    if response.status == 200:
-                        data = await response.json()
-                        return self._parse_produtos(data)
-            except Exception as e:
-                logger.error(f"Erro Mercado Livre: {e}")
-        return []
-    
-    def _parse_produtos(self, data: Dict) -> List[Produto]:
-        produtos = []
-        
-        for item in data.get('results', []):
-            preco_atual = item.get('price', 0)
-            preco_original = item.get('original_price', preco_atual)
-            desconto = ((preco_original - preco_atual) / preco_original * 100) if preco_original > preco_atual else 0
-            
-            produto = Produto(
-                id=item.get('id', ''),
-                nome=item.get('title', 'Produto'),
-                preco=preco_atual,
-                preco_original=preco_original,
-                desconto=desconto,
-                url=item.get('permalink', ''),
-                url_afiliado=self._gerar_link_afiliado(item.get('permalink', '')),
-                imagem=item.get('thumbnail', ''),
-                vendas=item.get('sold_quantity', 0),
-                avaliacao=item.get('reviews', {}).get('rating_average', 0),
-                num_avaliacoes=item.get('reviews', {}).get('total', 0),
-                loja=item.get('seller', {}).get('nickname', 'ML'),
-                loja_id=str(item.get('seller_id', '')),
-                categoria=item.get('category_id', ''),
-                estoque=item.get('available_quantity', 0),
-                marketplace=self.marketplace,
-                frete_gratis=item.get('shipping', {}).get('free_shipping', False),
-                comissao_percentual=self.comissao_media,
-                score_conversao=item.get('sold_quantity', 0) * 0.5
-            )
-            
-            produtos.append(produto)
-        
-        return produtos
-    
-    def _gerar_link_afiliado(self, url: str) -> str:
-        if self.affiliate_id and url:
-            separator = '&' if '?' in url else '?'
-            return f"{url}{separator}pdp_dl=true&affiliate_id={self.affiliate_id}"
-        return url
+        <!-- Status do Bot -->
+        <div style="text-align: center; margin: 15px 0; font-size: 13px; color: #666;">
+            Bot Status: <strong style="color: #28a745;">Online</strong>
+            <span class="status-indicator" id="statusIndicator"></span>
+        </div>
 
-# ==================== COMPARADOR ====================
+        <!-- Estatísticas ao vivo -->
+        <div class="stats-section">
+            <h3>
+                <span>📊</span>
+                <span>Estatísticas em Tempo Real</span>
+            </h3>
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <div class="stat-value loading" id="totalUsers">-</div>
+                    <div class="stat-label">Usuários</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value loading" id="clicksToday">-</div>
+                    <div class="stat-label">Cliques Hoje</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value loading" id="conversionRate">-</div>
+                    <div class="stat-label">Conversão</div>
+                </div>
+            </div>
+        </div>
 
-class ComparadorMultiMarketplace:
-    """Comparador multi-marketplace"""
-    
-    def __init__(self):
-        self.shopee = ShopeeAffiliateAPI()
-        self.mercadolivre = MercadoLivreAPI()
-    
-    async def buscar_todos_marketplaces(self, termo: str) -> Dict[str, List[Produto]]:
-        """Busca em todos os marketplaces"""
-        tasks = [
-            self.shopee.buscar_produtos(termo, limit=15),
-            self.mercadolivre.buscar_produtos(termo, limit=15)
-        ]
+        <!-- Marketplaces -->
+        <h3>
+            <span>🛒</span>
+            <span>Marketplaces Disponíveis</span>
+        </h3>
+        <div class="marketplace-grid">
+            <div class="marketplace-card" onclick="openMarketplace('shopee')">
+                <div class="mp-icon">🛍️</div>
+                <div class="mp-name">Shopee</div>
+                <div class="mp-commission">até 8%</div>
+                <div class="mp-status">✓ Ativo</div>
+            </div>
+            <div class="marketplace-card" onclick="openMarketplace('mercadolivre')">
+                <div class="mp-icon">📦</div>
+                <div class="mp-name">Mercado Livre</div>
+                <div class="mp-commission">até 6%</div>
+                <div class="mp-status">✓ Ativo</div>
+            </div>
+            <div class="marketplace-card" onclick="openMarketplace('amazon')">
+                <div class="mp-icon">📱</div>
+                <div class="mp-name">Amazon</div>
+                <div class="mp-commission">até 10%</div>
+                <div class="mp-status">⏳ Em breve</div>
+            </div>
+            <div class="marketplace-card" onclick="openMarketplace('magalu')">
+                <div class="mp-icon">🏬</div>
+                <div class="mp-name">Magalu</div>
+                <div class="mp-commission">até 5%</div>
+                <div class="mp-status">⏳ Em breve</div>
+            </div>
+            <div class="marketplace-card" onclick="openMarketplace('aliexpress')">
+                <div class="mp-icon">🌏</div>
+                <div class="mp-name">AliExpress</div>
+                <div class="mp-commission">até 8%</div>
+                <div class="mp-status">⏳ Em breve</div>
+                       <div class="marketplace-card" onclick="openMarketplace('aliexpress')">
+                <div class="mp-icon">🌏</div>
+                <div class="mp-name">AliExpress</div>
+                <div class="mp-commission">até 8%</div>
+                <div class="mp-status">⏳ Em breve</div>
+            </div>
+            <div class="marketplace-card" onclick="openMarketplace('hotmart')">
+                <div class="mp-icon">💎</div>
+                <div class="mp-name">Hotmart</div>
+                <div class="mp-commission">até 40%</div>
+                <div class="mp-status">⏳ Em breve</div>
+            </div>
+        </div>
+
+        <!-- Busca Rápida -->
+        <h3>
+            <span>🔍</span>
+            <span>Busca Multi-Marketplace</span>
+        </h3>
+        <div class="search-box">
+            <input type="text" id="searchInput" placeholder="Digite o produto (ex: fone bluetooth)" onkeypress="handleSearchEnter(event)">
+            <button onclick="performSearch()">Buscar</button>
+        </div>
+        <p style="font-size: 12px; color: #999; margin-top: 8px; text-align: center;">
+            🔗 Use o bot no Telegram para buscar em todos os marketplaces simultaneamente
+        </p>
+
+        <!-- Recursos -->
+        <h3>
+            <span>⚡</span>
+            <span>Recursos do Bot</span>
+        </h3>
+        <ul class="features-list">
+            <li>Busca simultânea em 5+ marketplaces</li>
+            <li>Comparação automática de preços</li>
+            <li>Links de afiliado otimizados</li>
+            <li>Copy marketing com IA (Groq)</li>
+            <li>Estatísticas e analytics em tempo real</li>
+            <li>Alertas de preço personalizados</li>
+            <li>Sistema de cashback integrado</li>
+        </ul>
+
+        <!-- Contato -->
+        <h3>
+            <span>📞</span>
+            <span>Entre em Contato</span>
+        </h3>
         
-        resultados = await asyncio.gather(*tasks, return_exceptions=True)
-        
-        return {
-            'Shopee': resultados[0] if isinstance(resultados[0], list) else [],
-            'Mercado Livre': resultados[1] if isinstance(resultados[1], list) else []
-        }
-    
-    def comparar_precos(self, produtos_por_marketplace: Dict[str, List[Produto]]) -> Dict:
-        """Compara preços"""
-        todos_produtos = []
-        for marketplace, produtos in produtos_por_marketplace.items():
-            todos_produtos.extend(produtos)
-        
-        if not todos_produtos:
-            return {'produtos': [], 'melhor_marketplace': None, 'total_produtos': 0, 'distribuicao': {}}
-        
-        produtos_agrupados = defaultdict(list)
-        for p in todos_produtos:
-            nome_normalizado = re.sub(r'[^\w\s]', '', p.nome.lower())[:50]
-            produtos_agrupados[nome_normalizado].append(p)
-        
-        melhores_ofertas = []
-        for nome, grupo in produtos_agrupados.items():
-            if len(grupo) > 1:
-                menor_preco = min(p.preco for p in grupo)
-                melhor = next(p for p in grupo if p.preco == menor_preco)
-                melhores_ofertas.append(melhor)
-        
-        melhores_ofertas.sort(key=lambda x: x.score_conversao, reverse=True)
-        
-        contador_marketplaces = defaultdict(int)
-        for oferta in melhores_ofertas[:20]:
-            contador_marketplaces[oferta.marketplace] += 1
-        
-        melhor_marketplace = max(contador_marketplaces.items(), key=lambda x: x[1])[0] if contador_marketplaces else None
-        
-        return {
-            'produtos': melhores_ofertas[:20],
-            'melhor_marketplace': melhor_marketplace,
-            'total_produtos': len(todos_produtos),
-            'distribuicao': dict(contador_marketplaces)
+        <div class="contact-item" onclick="copyToClipboard('sidsoutto@gmail.com', this, 'E-mail')">
+            <div class="icon">📧</div>
+            <div class="contact-info">
+                <div class="contact-label">E-mail</div>
+                <div class="contact-value">sidsoutto@gmail.com</div>
+            </div>
+            <div class="copy-indicator">📋</div>
+        </div>
+
+        <div class="contact-item" onclick="copyToClipboard('84933003513', this, 'Telefone')">
+            <div class="icon">📱</div>
+            <div class="contact-info">
+                <div class="contact-label">Telefone</div>
+                <div class="contact-value">(84) 93300-3513</div>
+            </div>
+            <div class="copy-indicator">📋</div>
+        </div>
+
+        <div class="contact-item" onclick="copyToClipboard('https://t.me/sidsoutto', this, 'Telegram')">
+            <div class="icon">✈️</div>
+            <div class="contact-info">
+                <div class="contact-label">Telegram</div>
+                <div class="contact-value">@sidsoutto</div>
+            </div>
+            <div class="copy-indicator">📋</div>
+        </div>
+
+        <!-- Botão Telegram -->
+        <button class="telegram-btn" onclick="openTelegram()">
+            <span>✈️</span>
+            <span>Abrir Bot no Telegram</span>
+        </button>
+
+        <!-- Top Marketplaces -->
+        <h3>
+            <span>🏆</span>
+            <span>Top 5 Marketplaces (Cliques)</span>
+        </h3>
+        <div id="topMarketplaces" style="min-height: 80px;">
+            <p style="text-align: center; color: #999; padding: 20px;">
+                Carregando dados...
+            </p>
+        </div>
+
+        <!-- Footer -->
+        <div class="footer">
+            <p>✨ Clique nos itens para copiar</p>
+            <p class="version">v2.0.0 | Sistema Integrado | API REST disponível</p>
+            <div class="social-links">
+                <a href="https://t.me/sidsoutto" target="_blank">Telegram</a>
+                <a href="mailto:sidsoutto@gmail.com">Email</a>
+                <a href="/api/stats" target="_blank">API Status</a>
+            </div>
+            <p style="margin-top: 15px; font-size: 11px;">
+                © 2024 Sid Soutto - Todos os direitos reservados<br>
+                Bot desenvolvido com Python + Telegram Bot API
+            </p>
+        </div>
+    </div>
+
+    <!-- Toast de notificações -->
+    <div class="toast" id="toast"></div>
+
+    <script>
+        // ==================== FUNÇÕES PRINCIPAIS ====================
+
+        // Copiar para clipboard
+        function copyToClipboard(text, element, label) {
+            const textArea = document.createElement('textarea');
+            textArea.value = text;
+            textArea.style.position = 'fixed';
+            textArea.style.left = '-999999px';
+            document.body.appendChild(textArea);
+            textArea.select();
+            
+            try {
+                document.execCommand('copy');
+                showToast(`${label} copiado com sucesso!`, 'success');
+                showCopyFeedback(element);
+            } catch (err) {
+                showToast('Erro ao copiar. Tente novamente.', 'error');
+                console.error('Erro ao copiar:', err);
+            }
+            
+            document.body.removeChild(textArea);
         }
 
-# ==================== MARKETING IA ====================
-
-class MarketingAIGroq:
-    """Marketing com IA"""
-    
-    def __init__(self):
-        self.api_key = os.getenv('GROQ_API_KEY')
-        self.base_url = 'https://api.groq.com/openai/v1/chat/completions'
-        self.model = 'llama-3.3-70b-versatile'
-    
-    async def gerar_copy_multi_marketplace(self, produto: Produto, produtos_similares: List[Produto]) -> str:
-        precos_por_marketplace = {}
-        for p in produtos_similares:
-            if p.marketplace not in precos_por_marketplace or p.preco < precos_por_marketplace[p.marketplace]:
-                precos_por_marketplace[p.marketplace] = p.preco
-        
-        comparacao_precos = "\n".join([f"- {k}: R$ {v:.2f}" for k, v in precos_por_marketplace.items()])
-        comissao_estimada = produto.preco * (produto.comissao_percentual / 100)
-        
-        prompt = f"""Crie copy DEVASTADORA para venda de produto.
-
-PRODUTO: {produto.nome}
-Marketplace: {produto.marketplace}
-Preco: R$ {produto.preco:.2f}
-Desconto: {produto.desconto:.0f}%
-Vendas: {produto.vendas}
-
-COMPARACAO:
-{comparacao_precos}
-
-REGRAS:
-1. ZERO emojis
-2. Destaque vantagem competitiva
-3. Prova social forte
-4. Urgencia maxima
-5. CTA explosivo
-
-Maximo: 120 palavras."""
-
-        headers = {
-            'Authorization': f'Bearer {self.api_key}',
-            'Content-Type': 'application/json'
+        // Feedback visual de cópia
+        function showCopyFeedback(element) {
+            const originalBg = element.style.background;
+            element.style.background = 'linear-gradient(135deg, #d4edda, #c3e6cb)';
+            element.style.transition = 'background 0.3s';
+            
+            setTimeout(() => {
+                element.style.background = originalBg;
+            }, 400);
         }
-        
-        payload = {
-            'model': self.model,
-            'messages': [
-                {'role': 'system', 'content': 'Voce e o melhor copywriter de e-commerce.'},
-                {'role': 'user', 'content': prompt}
-            ],
-            'temperature': 1.0,
-            'max_tokens': 400
+
+        // Toast de notificações
+        function showToast(message, type = 'success') {
+            const toast = document.getElementById('toast');
+            toast.textContent = message;
+            toast.className = `toast ${type}`;
+            
+            setTimeout(() => {
+                toast.classList.add('show');
+            }, 100);
+            
+            setTimeout(() => {
+                toast.classList.remove('show');
+            }, 3000);
         }
-        
-        async with aiohttp.ClientSession() as session:
-            try:
-                async with session.post(self.base_url, json=payload, headers=headers) as response:
-                    if response.status == 200:
-                        data = await response.json()
-                        return data['choices'][0]['message']['content']
-            except Exception as e:
-                logger.error(f"Erro Groq: {e}")
-        
-        return self._copy_fallback(produto)
-    
-    def _copy_fallback(self, produto: Produto) -> str:
-        return f"""OFERTA IMPERDIVEL - {produto.marketplace}
 
-{produto.nome}
+        // Abrir Telegram
+        function openTelegram() {
+            const telegramUrl = 'https://t.me/sidsoutto';
+            window.open(telegramUrl, '_blank');
+            showToast('Abrindo Telegram...', 'info');
+        }
 
-PRECO: R$ {produto.preco:.2f}
-DESCONTO: {produto.desconto:.0f}%
-JA VENDEU: {produto.vendas} unidades
-
-{produto.num_avaliacoes} avaliacoes com nota {produto.avaliacao}/5.0
-
-{'FRETE GRATIS' if produto.frete_gratis else 'Frete disponivel'}
-
-CLIQUE AGORA!"""
-
-# ==================== BOT ====================
-
-class BotMultiAfiliado:
-    """Bot principal"""
-    
-    def __init__(self):
-        self.token = os.getenv('TELEGRAM_BOT_TOKEN')
-        self.comparador = ComparadorMultiMarketplace()
-        self.marketing = MarketingAIGroq()
-        self.db = DatabaseManager()
-    
-    async def start(self, update: Update, context: ContextTypes.DEFAULT_TYPE):
-        user = update.effective_user
-        
-        usuario_db = self.db.obter_usuario(user.id)
-        if not usuario_db:
-            usuario = Usuario(
-                user_id=user.id,
-                username=user.username or '',
-                nome=user.first_name,
-                data_registro=datetime.now(),
-                ultima_interacao=datetime.now()
-            )
-            self.db.salvar_usuario(usuario)
-        
-        keyboard = [
-            [InlineKeyboardButton("🔍 Busca Multi-Marketplace", callback_data='buscar_multi')],
-            [InlineKeyboardButton("🏆 Melhores Ofertas", callback_data='melhores_ofertas')],
-            [InlineKeyboardButton("📊 Comparar Precos", callback_data='comparar')],
-            [
-                InlineKeyboardButton("🛒 Shopee", callback_data='mk_shopee'),
-                InlineKeyboardButton("📦 ML", callback_data='mk_ml')
-            ],
-            [InlineKeyboardButton("📈 Estatisticas", callback_data='stats')],
-            [InlineKeyboardButton("⚙️ Meu Perfil", callback_data='perfil')],
-            [InlineKeyboardButton("🌐 Visitar Site", url='https://sidsoutto.netlify.app')]
-        ]
-        reply_markup = InlineKeyboardMarkup(keyboard)
-        
-        mensagem = f"""MULTI-MARKETPLACE AFILIADO PRO
-
-Ola, {user.first_name}!
-
-MARKETPLACES:
-✓ Shopee (comissao 8%)
-✓ Mercado Livre (comissao 6%)
-
-RECURSOS:
-- Busca simultanea
-- Comparacao automatica
-- Marketing IA
-- Links afiliados
-
-Site: https://sidsoutto.netlify.app
-Contato: @sidsoutto
-
-Escolha uma opcao:"""
-        
-        await update.message.reply_text(mensagem, reply_markup=reply_markup)
-    
-    async def callback_handler(self, update: Update, context: ContextTypes.DEFAULT_TYPE):
-        query = update.callback_query
-        await query.answer()
-        
-        if query.data == 'buscar_multi':
-            await query.edit_message_text(
-                "Digite o produto para buscar:\n\n"
-                "Exemplo: fone bluetooth"
-            )
-            context.user_data['modo'] = 'buscar_multi'
-        
-        elif query.data == 'melhores_ofertas':
-            await self.mostrar_melhores_ofertas(update, context)
-        
-        elif query.data == 'comparar':
-            await query.edit_message_text("Digite o produto para comparar:")
-            context.user_data['modo'] = 'comparar'
-        
-        elif query.data == 'stats':
-            await self.mostrar_estatisticas(update, context)
-        
-        elif query.data == 'perfil':
-            await self.mostrar_perfil(update, context)
-    
-    async def processar_mensagem(self, update: Update, context: ContextTypes.DEFAULT_TYPE):
-        modo = context.user_data.get('modo')
-        termo = update.message.text
-        
-        if modo == 'buscar_multi':
-            await update.message.reply_text(f"Buscando '{termo}'...")
+        // Abrir Marketplace
+        function openMarketplace(marketplace) {
+            const urls = {
+                shopee: 'https://shopee.com.br',
+                mercadolivre: 'https://mercadolivre.com.br',
+                amazon: 'https://amazon.com.br',
+                magalu: 'https://magazineluiza.com.br',
+                aliexpress: 'https://pt.aliexpress.com',
+                hotmart: 'https://hotmart.com'
+            };
             
-            produtos_por_marketplace = await self.comparador.buscar_todos_marketplaces(termo)
-            resultado = self.comparador.comparar_precos(produtos_por_marketplace)
+            if (urls[marketplace]) {
+                window.open(urls[marketplace], '_blank');
+                showToast(`Abrindo ${marketplace}...`, 'info');
+            } else {
+                showToast('Marketplace em breve!', 'info');
+            }
+        }
+
+        // Busca de produtos
+        function performSearch() {
+            const input = document.getElementById('searchInput');
+            const termo = input.value.trim();
             
-            if not resultado['produtos']:
-                await update.message.reply_text("Nenhum produto encontrado.")
-                context.user_data['modo'] = None
-                return
+            if (!termo) {
+                showToast('Digite o nome do produto!', 'error');
+                input.focus();
+                return;
+            }
             
-            mensagem = f"RESULTADOS - {resultado['total_produtos']} produtos\n\n"
+            showToast(`Use o bot no Telegram para buscar "${termo}"`, 'info');
             
-            for i, p in enumerate(resultado['produtos'][:10], 1):
-                mensagem += f"{i}. {p.marketplace} - R$ {p.preco:.2f}\n"
-                mensagem += f"   {p.nome[:50]}\n\n"
-            
-            await update.message.reply_text(mensagem[:4000])
-            
-            for produto in resultado['produtos'][:3]:
-                await self.enviar_produto_completo(update, produto, resultado['produtos'])
-                await asyncio.sleep(1)
-            
-            context.user_data['modo'] = None
-        
-        elif modo == 'comparar':
-            await update.message.reply_text(f"Comparando '{termo}'...")
-            
-            produtos_por_marketplace = await self.comparador.buscar_todos_marketplaces(termo)
-            resultado = self.comparador.comparar_precos(produtos_por_marketplace)
-            
-            if resultado['produtos']:
-                mensagem = "COMPARACAO\n\n"
+            // Simula busca (em produção, faria requisição para API)
+            setTimeout(() => {
+                openTelegram();
+            }, 1500);
+        }
+
+        // Enter no input de busca
+        function handleSearchEnter(event) {
+            if (event.key === 'Enter') {
+                performSearch();
+            }
+        }
+
+        // ==================== ESTATÍSTICAS EM TEMPO REAL ====================
+
+        async function loadStats() {
+            try {
+                const response = await fetch('/api/stats');
+                const data = await response.json();
                 
-                for marketplace, count in resultado['distribuicao'].items():
-                    mensagem += f"{marketplace}: {count} ofertas\n"
-                
-                mensagem += f"\nMelhor: {resultado['melhor_marketplace']}\n\n"
-                
-                for i, p in enumerate(resultado['produtos'][:5], 1):
-                    mensagem += f"{i}. [{p.marketplace}] {p.nome[:40]}\n"
-                    mensagem += f"   R$ {p.preco:.2f}\n\n"
-                
-                await update.message.reply_text(mensagem[:4000])
-            
-            context.user_data['modo'] = None
-    
-    async def enviar_produto_completo(self, update: Update, produto: Produto, produtos_similares: List[Produto]):
-        copy = await self.marketing.gerar_copy_multi_marketplace(produto, produtos_similares)
-        
-        comissao = produto.preco * (produto.comissao_percentual / 100)
-        
-        footer = f"\n\n{produto.marketplace}"
-        footer += f"\nComissao: {produto.comissao_percentual}% (R$ {comissao:.2f})"
-        footer += f"\nVendas: {produto.vendas}"
-        if produto.frete_gratis:
-            footer += "\nFRETE GRATIS"
-        
-        mensagem_final = copy + footer
-        
-        keyboard = [[InlineKeyboardButton("🛒 COMPRAR", url=produto.url_afiliado)]]
-        reply_markup = InlineKeyboardMarkup(keyboard)
-        
-        self.db.registrar_visualizacao(update.effective_user.id, produto.id, produto.marketplace)
-        
-        try:
-            if produto.imagem:
-                await update.effective_message.reply_photo(
-                    photo=produto.imagem,
-                    caption=mensagem_final[:1024],
-                    reply_markup=reply_markup
-                )
-            else:
-                await update.effective_message.reply_text(mensagem_final, reply_markup=reply_markup)
-        except Exception as e:
-            logger.error(f"Erro: {e}")
-    
-    async def mostrar_melhores_ofertas(self, update: Update, context: ContextTypes.DEFAULT_TYPE):
-        query = update.callback_query
-        await query.edit_message_text("Analisando ofertas...")
-        
-        termos = ["smartphone", "notebook"]
-        todas_ofertas = []
-        
-        for termo in termos:
-            produtos = await self.comparador.buscar_todos_marketplaces(termo)
-            resultado = self.comparador.comparar_precos(produtos)
-            todas_ofertas.extend(resultado['produtos'][:3])
-        
-        todas_ofertas.sort(key=lambda x: x.desconto, reverse=True)
-        
-        mensagem = "TOP OFERTAS\n\n"
-        
-        for i, p in enumerate(todas_ofertas[:10], 1):
-            mensagem += f"{i}. {p.marketplace} - {p.nome[:30]}\n"
-            mensagem += f"   R$ {p.preco:.2f} ({p.desconto:.0f}% OFF)\n\n"
-        
-        await query.edit_message_text(mensagem[:4000])
-    
-    async def mostrar_estatisticas(self, update: Update, context: ContextTypes.DEFAULT_TYPE):
-        query = update.callback_query
-        stats = self.db.obter_estatisticas()
-        
-        mensagem = f"""ESTATISTICAS
-
-Total usuarios: {stats['total_usuarios']}
-Visualizacoes hoje: {stats['visualizacoes_hoje']}
-Cliques hoje: {stats['cliques_hoje']}
-Taxa conversao: {stats['taxa_conversao']}%
-
-TOP MARKETPLACES:
-"""
-        
-        for marketplace, cliques in stats['top_marketplaces'][:3]:
-            mensagem += f"- {marketplace}: {cliques} cliques\n"
-        
-        await query.edit_message_text(mensagem)
-    
-    async def mostrar_perfil(self, update: Update, context: ContextTypes.DEFAULT_TYPE):
-        query = update.callback_query
-        usuario = self.db.obter_usuario(update.effective_user.id)
-        
-        if usuario:
-            taxa = (usuario.links_clicados / max(usuario.produtos_visualizados, 1) * 100)
-            mensagem = f"""SEU PERFIL
-
-Nome: {usuario.nome}
-Membro desde: {usuario.data_registro.strftime('%d/%m/%Y')}
-
-Produtos visualizados: {usuario.produtos_visualizados}
-Links clicados: {usuario.links_clicados}
-Taxa conversao: {taxa:.1f}%
-
-Visite nosso site:
-https://sidsoutto.netlify.app"""
-            
-            await query.edit_message_text(mensagem)
-    
-    def run(self):
-        app = Application.builder().token(self.token).build()
-        
-        app.add_handler(CommandHandler("start", self.start))
-        app.add_handler(CallbackQueryHandler(self.callback_handler))
-        app.add_handler(MessageHandler(filters.TEXT & ~filters.COMMAND, self.processar_mensagem))
-        
-        logger.info("=" * 60)
-        logger.info("BOT MULTI-MARKETPLACE INICIADO")
-        logger.info("Site: https://sidsoutto.netlify.app")
-        logger.info("=" * 60)
-        
-        app.run_polling()
-
-# ==================== SERVIDOR WEB ====================
-
-# Instância global do database para o Flask
-db_web = DatabaseManager()
-
-app = Flask(__name__)
-CORS(app)
-
-@app.route('/')
-def index():
-    """Retorna o HTML do site"""
-    # O HTML está no arquivo separado (index.html)
-    return "Bot rodando! Site disponível em /site"
-
-@app.route('/api/stats')
-def api_stats():
-    """API de estatísticas"""
-    stats = db_web.obter_estatisticas()
-    
-    return jsonify({
-        'success': True,
-        'data': {
-            'total_usuarios': stats['total_usuarios'],
-            'cliques_hoje': stats['cliques_hoje'],
-            'visualizacoes_hoje': stats['visualizacoes_hoje'],
-            'taxa_conversao': stats['taxa_conversao'],
-            'top_marketplaces': [{'nome': m[0], 'cliques': m[1]} for m in stats['top_marketplaces'][:5]]
+                if (data.success) {
+                    updateStats(data.data);
+                    updateStatusIndicator(true);
+                } else {
+                    throw new Error(data.error || 'Erro desconhecido');
+                }
+            } catch (error) {
+                console.error('Erro ao carregar stats:', error);
+                updateStatsError();
+                updateStatusIndicator(false);
+            }
         }
-    })
 
-def run_web_server():
-    """Inicia servidor Flask"""
-    app.run(host='0.0.0.0', port=int(os.getenv('PORT', 8080)), debug=False)
+        function updateStats(stats) {
+            // Atualiza valores com animação
+            animateValue('totalUsers', 0, stats.total_usuarios, 1000);
+            animateValue('clicksToday', 0, stats.cliques_hoje, 1000);
+            
+            const conversionElement = document.getElementById('conversionRate');
+            conversionElement.textContent = stats.taxa_conversao + '%';
+            conversionElement.classList.remove('loading');
 
-# ==================== MAIN ====================
+            // Atualiza top marketplaces
+            updateTopMarketplaces(stats.top_marketplaces || []);
+        }
 
-if __name__ == '__main__':
-    # Inicia servidor web em thread separada
-    web_thread = threading.Thread(target=run_web_server, daemon=True)
-    web_thread.start()
-    
-    # Inicia bot
-    bot = BotMultiAfiliado()
-    bot.run()
+        function updateStatsError() {
+            document.getElementById('totalUsers').textContent = '-';
+            document.getElementById('clicksToday').textContent = '-';
+            document.getElementById('conversionRate').textContent = '-';
+            
+            document.querySelectorAll('.stat-value').forEach(el => {
+                el.classList.remove('loading');
+            });
+
+            const topContainer = document.getElementById('topMarketplaces');
+            topContainer.innerHTML = '<p style="text-align: center; color: #dc3545; padding: 20px;">⚠️ Erro ao carregar dados</p>';
+        }
+
+        function animateValue(id, start, end, duration) {
+            const element = document.getElementById(id);
+            element.classList.remove('loading');
+            
+            const range = end - start;
+            const increment = range / (duration / 16);
+            let current = start;
+            
+            const timer = setInterval(() => {
+                current += increment;
+                if ((increment > 0 && current >= end) || (increment < 0 && current <= end)) {
+                    current = end;
+                    clearInterval(timer);
+                }
+                element.textContent = Math.round(current);
+            }, 16);
+        }
+
+        function updateTopMarketplaces(marketplaces) {
+            const container = document.getElementById('topMarketplaces');
+            
+            if (!marketplaces || marketplaces.length === 0) {
+                container.innerHTML = '<p style="text-align: center; color: #999; padding: 20px;">Nenhum dado disponível ainda</p>';
+                return;
+            }
+
+            const maxClicks = Math.max(...marketplaces.map(m => m.cliques), 1);
+            
+            let html = '<div style="padding: 10px 0;">';
+            marketplaces.forEach((mp, index) => {
+                const percentage = (mp.cliques / maxClicks) * 100;
+                const icons = {
+                    'Shopee': '🛍️',
+                    'Mercado Livre': '📦',
+                    'Amazon': '📱',
+                    'Magazine Luiza': '🏬',
+                    'AliExpress': '🌏'
+                };
+                
+                html += `
+                    <div style="margin-bottom: 12px;">
+                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 5px;">
+                            <span style="font-size: 13px; font-weight: 600; color: #333;">
+                                <span style="font-size: 16px;">${icons[mp.nome] || '📊'}</span> 
+                                ${index + 1}. ${mp.nome}
+                            </span>
+                            <span style="font-size: 13px; font-weight: 600; color: #667eea;">
+                                ${mp.cliques} cliques
+                            </span>
+                        </div>
+                        <div style="width: 100%; height: 8px; background: #f0f0f0; border-radius: 10px; overflow: hidden;">
+                            <div style="width: ${percentage}%; height: 100%; background: linear-gradient(90deg, #667eea, #764ba2); transition: width 1s ease;"></div>
+                        </div>
+                    </div>
+                `;
+            });
+            html += '</div>';
+            
+            container.innerHTML = html;
+        }
+
+        function updateStatusIndicator(isOnline) {
+            const indicator = document.getElementById('statusIndicator');
+            if (isOnline) {
+                indicator.classList.remove('offline');
+            } else {
+                indicator.classList.add('offline');
+            }
+        }
+
+        // ==================== HEALTH CHECK ====================
+
+        async function checkBotHealth() {
+            try {
+                const response = await fetch('/api/health');
+                const data = await response.json();
+                
+                if (data.status === 'online') {
+                    updateStatusIndicator(true);
+                    return true;
+                }
+            } catch (error) {
+                console.error('Bot offline:', error);
+                updateStatusIndicator(false);
+                return false;
+            }
+            return false;
+        }
+
+        // ==================== INICIALIZAÇÃO ====================
+
+        // Carrega stats ao iniciar
+        window.addEventListener('DOMContentLoaded', () => {
+            console.log('🤖 Sistema Multi-Marketplace Iniciado');
+            
+            // Primeira carga
+            setTimeout(() => {
+                loadStats();
+                checkBotHealth();
+            }, 500);
+            
+            // Atualiza a cada 30 segundos
+            setInterval(() => {
+                loadStats();
+                checkBotHealth();
+            }, 30000);
+            
+            // Mensagem de boas-vindas
+            setTimeout(() => {
+                showToast('Sistema carregado com sucesso!', 'success');
+            }, 1000);
+        });
+
+        // ==================== EASTER EGGS ====================
+
+        let clickCount = 0;
+        document.querySelector('.avatar').addEventListener('click', () => {
+            clickCount++;
+            if (clickCount === 5) {
+                showToast('🎉 Easter egg encontrado! Você ganhou um desconto especial!', 'success');
+                clickCount = 0;
+            }
+        });
+
+        // Atalhos de teclado
+        document.addEventListener('keydown', (e) => {
+            // Ctrl+K: Focus no campo de busca
+            if (e.ctrlKey && e.key === 'k') {
+                e.preventDefault();
+                document.getElementById('searchInput').focus();
+                showToast('Campo de busca ativado', 'info');
+            }
+            
+            // Ctrl+T: Abrir Telegram
+            if (e.ctrlKey && e.key === 't') {
+                e.preventDefault();
+                openTelegram();
+            }
+            
+            // Ctrl+R: Recarregar stats
+            if (e.ctrlKey && e.key === 'r') {
+                e.preventDefault();
+                showToast('Recarregando estatísticas...', 'info');
+                loadStats();
+            }
+        });
+
+        // ==================== ANALYTICS ====================
+
+        function trackEvent(category, action, label) {
+            console.log(`📊 Analytics: ${category} | ${action} | ${label}`);
+            // Em produção, enviar para Google Analytics ou similar
+        }
+
+        // Rastreia cliques nos marketplaces
+        document.querySelectorAll('.marketplace-card').forEach(card => {
+            card.addEventListener('click', function() {
+                const marketplace = this.querySelector('.mp-name').textContent;
+                trackEvent('Marketplace', 'Click', marketplace);
+            });
+        });
+
+        // ==================== PWA SUPPORT ====================
+
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => {
+                // Registraria service worker aqui para PWA
+                console.log('🔧 PWA Ready');
+            });
+        }
+
+        // ==================== MODO ESCURO (BONUS) ====================
+
+        let darkMode = localStorage.getItem('darkMode') === 'true';
+
+        function toggleDarkMode() {
+            darkMode = !darkMode;
+            localStorage.setItem('darkMode', darkMode);
+            
+            if (darkMode) {
+                document.body.style.background = 'linear-gradient(135deg, #1a1a2e 0%, #16213e 100%)';
+                document.querySelector('.container').style.background = '#0f3460';
+                document.querySelector('.container').style.color = '#eee';
+                showToast('Modo escuro ativado', 'info');
+            } else {
+                document.body.style.background = 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)';
+                document.querySelector('.container').style.background = 'white';
+                document.querySelector('.container').style.color = '#333';
+                showToast('Modo claro ativado', 'info');
+            }
+        }
+
+        // Double click no header para ativar modo escuro
+        document.querySelector('.header').addEventListener('dblclick', toggleDarkMode);
+
+        // ==================== CACHE MANAGER ====================
+
+        const CACHE_DURATION = 5 * 60 * 1000; // 5 minutos
+        let cachedStats = null;
+        let cacheTimestamp = null;
+
+        function getCachedStats() {
+            if (cachedStats && cacheTimestamp && (Date.now() - cacheTimestamp < CACHE_DURATION)) {
+                return cachedStats;
+            }
+            return null;
+        }
+
+        function setCachedStats(stats) {
+            cachedStats = stats;
+            cacheTimestamp = Date.now();
+        }
+
+        // ==================== ERROR HANDLER ====================
+
+        window.addEventListener('error', (event) => {
+            console.error('Erro global capturado:', event.error);
+            // Em produção, enviar para serviço de logging
+        });
+
+        // ==================== PERFORMANCE MONITOR ====================
+
+        if ('performance' in window) {
+            window.addEventListener('load', () => {
+                setTimeout(() => {
+                    const perfData = performance.timing;
+                    const pageLoadTime = perfData.loadEventEnd - perfData.navigationStart;
+                    console.log(`⚡ Página carregada em ${pageLoadTime}ms`);
+                }, 0);
+            });
+        }
+
+        // ==================== CONSOLE INFO ====================
+
+        console.log(`
+        ╔══════════════════════════════════════════════════════════╗
+        ║   BOT MULTI-MARKETPLACE AFILIADO - PAINEL WEB           ║
+        ║   Desenvolvedor: Sid Soutto                             ║
+        ║   Versão: 2.0.0                                         ║
+        ║   API: http://localhost:5000/api/stats                  ║
+        ╚══════════════════════════════════════════════════════════╝
+        
+        Atalhos de teclado:
+        • Ctrl+K: Focus no campo de busca
+        • Ctrl+T: Abrir Telegram
+        • Ctrl+R: Recarregar estatísticas
+        • Double Click no Header: Modo escuro
+        • 5 cliques no avatar: Easter egg
+        `);
+    </script>
+</body>
+</html>
