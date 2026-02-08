@@ -3,79 +3,455 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description" content="Marketing de Milhões - Comparador de Preços em Tempo Real">
-    <meta name="keywords" content="comparador de preços, shopee, mercado livre, amazon, economia">
-    <title>Marketing de Milhões - Economia Garantida</title>
+    <meta name="description" content="Os melhores produtos selecionados para você com ofertas exclusivas e descontos imperdíveis.">
+    <meta name="keywords" content="afiliados, produtos, ofertas, descontos, promoções">
+    <meta name="author" content="MegaOfertas">
+    <title>MegaOfertas | Os Melhores Produtos com Descontos Exclusivos</title>
+    
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@300;400;600;700;800&display=swap" rel="stylesheet">
+    
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     
     <style>
+        /* ==================== RESET & VARIABLES ==================== */
+        :root {
+            --primary-color: rgb(228, 131, 18);
+            --primary-dark: rgb(200, 110, 10);
+            --primary-light: rgb(255, 200, 120);
+            --text-color: rgb(68, 68, 68);
+            --text-light: rgb(120, 120, 120);
+            --background-light: rgb(248, 248, 248);
+            --background-white: rgb(255, 255, 255);
+            --success-color: rgb(40, 167, 69);
+            --danger-color: rgb(220, 53, 69);
+            --shadow-light: rgba(0, 0, 0, 0.1);
+            --shadow-medium: rgba(0, 0, 0, 0.15);
+            --border-radius: 12px;
+            --transition: all 0.3s ease;
+        }
+
         * {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
         }
 
+        html {
+            scroll-behavior: smooth;
+        }
+
         body {
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, sans-serif;
-            background: linear-gradient(135deg, #1d7c4d 0%, #0f5c3a 100%);
-            min-height: 100vh;
+            font-family: "Open Sans", sans-serif;
+            font-size: 13px;
+            line-height: 21.125px;
+            color: var(--text-color);
+            background-color: var(--background-light);
+            -webkit-tap-highlight-color: rgba(0, 0, 0, 0);
+            text-size-adjust: 100%;
+        }
+
+        ul, li {
+            list-style: none;
+        }
+
+        a {
+            text-decoration: none;
+            color: inherit;
+            transition: var(--transition);
+        }
+
+        img {
+            max-width: 100%;
+            height: auto;
+            display: block;
+        }
+
+        /* ==================== UTILITY CLASSES ==================== */
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+
+        .section-title {
+            font-size: 28px;
+            font-weight: 700;
+            text-align: center;
+            margin-bottom: 10px;
+            color: var(--text-color);
+        }
+
+        .section-subtitle {
+            font-size: 16px;
+            text-align: center;
+            color: var(--text-light);
+            margin-bottom: 40px;
+        }
+
+        .accent-border {
+            border-bottom: 4px solid var(--primary-color);
+            display: inline-block;
+            padding-bottom: 8px;
+        }
+
+        .btn {
+            display: inline-block;
+            padding: 14px 32px;
+            font-size: 14px;
+            font-weight: 600;
+            border-radius: 50px;
+            cursor: pointer;
+            transition: var(--transition);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, var(--primary-color), var(--primary-dark));
+            color: white;
+            border: none;
+            box-shadow: 0 4px 15px rgba(228, 131, 18, 0.4);
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 25px rgba(228, 131, 18, 0.5);
+        }
+
+        .btn-secondary {
+            background: transparent;
+            color: var(--primary-color);
+            border: 2px solid var(--primary-color);
+        }
+
+        .btn-secondary:hover {
+            background: var(--primary-color);
+            color: white;
+        }
+
+        /* ==================== HEADER ==================== */
+        .header {
+            background: var(--background-white);
+            box-shadow: 0 2px 20px var(--shadow-light);
+            position: fixed;
+            width: 100%;
+            top: 0;
+            z-index: 1000;
+        }
+
+        .header-top {
+            background: var(--text-color);
+            color: white;
+            padding: 8px 0;
+            font-size: 12px;
+        }
+
+        .header-top-content {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+
+        .header-top-left {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+        }
+
+        .header-top-left span {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .header-top-right {
+            display: flex;
+            gap: 15px;
+        }
+
+        .header-top-right a:hover {
+            color: var(--primary-color);
+        }
+
+        .header-main {
+            padding: 15px 0;
+        }
+
+        .header-main-content {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 30px;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .logo-icon {
+            width: 50px;
+            height: 50px;
+            background: linear-gradient(135deg, var(--primary-color), var(--primary-dark));
+            border-radius: 12px;
             display: flex;
             align-items: center;
             justify-content: center;
-            padding: 20px;
-        }
-
-        .container {
-            background: white;
-            border-radius: 20px;
-            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
-            max-width: 700px;
-            width: 100%;
-            padding: 40px;
-            animation: fadeIn 0.6s ease-in;
-        }
-
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(30px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-
-        .header {
-            text-align: center;
-            margin-bottom: 30px;
-        }
-
-        .avatar {
-            font-size: 80px;
-            margin-bottom: 15px;
-            animation: bounce 2s infinite;
-        }
-
-        @keyframes bounce {
-            0%, 100% { transform: translateY(0); }
-            50% { transform: translateY(-10px); }
-        }
-
-        h1 {
-            color: #0f5c3a;
-            font-size: 32px;
-            margin-bottom: 10px;
-            font-weight: 700;
-        }
-
-        .subtitle {
-            color: #666;
-            font-size: 16px;
-            margin-bottom: 15px;
-        }
-
-        .badge {
-            display: inline-block;
-            background: linear-gradient(135deg, #1d7c4d, #0f5c3a);
             color: white;
-            padding: 8px 20px;
-            border-radius: 20px;
+            font-size: 24px;
+        }
+
+        .logo-text {
+            font-size: 24px;
+            font-weight: 800;
+            color: var(--text-color);
+        }
+
+        .logo-text span {
+            color: var(--primary-color);
+        }
+
+        .search-bar {
+            flex: 1;
+            max-width: 500px;
+            position: relative;
+        }
+
+        .search-bar input {
+            width: 100%;
+            padding: 14px 50px 14px 20px;
+            border: 2px solid #e0e0e0;
+            border-radius: 50px;
+            font-size: 14px;
+            font-family: inherit;
+            transition: var(--transition);
+        }
+
+        .search-bar input:focus {
+            outline: none;
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 3px rgba(228, 131, 18, 0.1);
+        }
+
+        .search-bar button {
+            position: absolute;
+            right: 5px;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 40px;
+            height: 40px;
+            background: var(--primary-color);
+            border: none;
+            border-radius: 50%;
+            color: white;
+            cursor: pointer;
+            transition: var(--transition);
+        }
+
+        .search-bar button:hover {
+            background: var(--primary-dark);
+        }
+
+        .header-actions {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+        }
+
+        .header-action-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 4px;
+            cursor: pointer;
+            transition: var(--transition);
+        }
+
+        .header-action-item:hover {
+            color: var(--primary-color);
+        }
+
+        .header-action-item i {
+            font-size: 22px;
+        }
+
+        .header-action-item span {
+            font-size: 11px;
+            font-weight: 600;
+        }
+
+        .cart-icon {
+            position: relative;
+        }
+
+        .cart-badge {
+            position: absolute;
+            top: -8px;
+            right: -8px;
+            background: var(--danger-color);
+            color: white;
+            font-size: 10px;
+            font-weight: 700;
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        /* Navigation */
+        .nav {
+            background: var(--background-white);
+            border-top: 1px solid #eee;
+        }
+
+        .nav-list {
+            display: flex;
+            justify-content: center;
+            gap: 5px;
+        }
+
+        .nav-item {
+            position: relative;
+        }
+
+        .nav-link {
+            display: block;
+            padding: 15px 20px;
+            font-size: 14px;
+            font-weight: 600;
+            color: var(--text-color);
+            transition: var(--transition);
+            border-bottom: 3px solid transparent;
+        }
+
+        .nav-link:hover,
+        .nav-link.active {
+            color: var(--primary-color);
+            border-bottom-color: var(--primary-color);
+        }
+
+        .nav-link i {
+            margin-right: 6px;
+        }
+
+        .mobile-menu-btn {
+            display: none;
+            background: none;
+            border: none;
+            font-size: 24px;
+            color: var(--text-color);
+            cursor: pointer;
+        }
+
+        /* ==================== HERO SECTION ==================== */
+        .hero {
+            margin-top: 160px;
+            padding: 60px 0;
+            background: linear-gradient(135deg, #fff5e6 0%, #ffe4c4 100%);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .hero::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            right: -20%;
+            width: 600px;
+            height: 600px;
+            background: radial-gradient(circle, rgba(228, 131, 18, 0.1) 0%, transparent 70%);
+            border-radius: 50%;
+        }
+
+        .hero-content {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 50px;
+            align-items: center;
+        }
+
+        .hero-text h1 {
+            font-size: 48px;
+            font-weight: 800;
+            line-height: 1.2;
+            margin-bottom: 20px;
+            color: var(--text-color);
+        }
+
+        .hero-text h1 span {
+            color: var(--primary-color);
+        }
+
+        .hero-text p {
+            font-size: 18px;
+            color: var(--text-light);
+            margin-bottom: 30px;
+            line-height: 1.8;
+        }
+
+        .hero-buttons {
+            display: flex;
+            gap: 15px;
+            flex-wrap: wrap;
+        }
+
+        .hero-features {
+            display: flex;
+            gap: 30px;
+            margin-top: 40px;
+        }
+
+        .hero-feature {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .hero-feature i {
+            width: 40px;
+            height: 40px;
+            background: var(--primary-color);
+            color: white;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .hero-feature span {
             font-size: 13px;
             font-weight: 600;
+        }
+
+        .hero-image {
+            position: relative;
+            text-align: center;
+        }
+
+        .hero-image img {
+            max-width: 100%;
+            filter: drop-shadow(0 20px 40px rgba(0, 0, 0, 0.2));
+        }
+
+        .hero-badge {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            background: var(--danger-color);
+            color: white;
+            padding: 15px 20px;
+            border-radius: 10px;
+            font-weight: 700;
+            font-size: 18px;
             animation: pulse 2s infinite;
         }
 
@@ -84,540 +460,1882 @@
             50% { transform: scale(1.05); }
         }
 
-        .savings-banner {
-            background: linear-gradient(135deg, #e74c3c, #c0392b);
-            color: white;
-            padding: 25px;
-            border-radius: 15px;
-            text-align: center;
-            margin: 25px 0;
-            box-shadow: 0 8px 25px rgba(231, 76, 60, 0.4);
-        }
-
-        .savings-banner h2 {
-            font-size: 28px;
-            margin-bottom: 10px;
-        }
-
-        .savings-banner p {
-            font-size: 15px;
-            opacity: 0.95;
-        }
-
-        .telegram-btn {
-            background: linear-gradient(135deg, #0088cc, #00aaff);
-            color: white;
-            border: none;
-            border-radius: 15px;
-            padding: 22px;
-            width: 100%;
-            font-size: 22px;
-            font-weight: 700;
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 12px;
-            margin: 30px 0;
-            transition: all 0.3s ease;
-            box-shadow: 0 10px 30px rgba(0, 136, 204, 0.4);
-            text-decoration: none;
-        }
-
-        .telegram-btn:hover {
-            transform: translateY(-3px);
-            box-shadow: 0 15px 40px rgba(0, 136, 204, 0.6);
-        }
-
-        .telegram-btn:active {
-            transform: translateY(0);
-        }
-
-        h3 {
-            color: #0f5c3a;
-            font-size: 20px;
-            margin: 30px 0 15px 0;
-            padding-bottom: 10px;
-            border-bottom: 3px solid #1d7c4d;
-            display: flex;
-            align-items: center;
-            gap: 10px;
+        /* ==================== BENEFITS BAR ==================== */
+        .benefits-bar {
+            background: var(--background-white);
+            padding: 30px 0;
+            box-shadow: 0 5px 20px var(--shadow-light);
         }
 
         .benefits-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            grid-template-columns: repeat(4, 1fr);
+            gap: 30px;
+        }
+
+        .benefit-item {
+            display: flex;
+            align-items: center;
             gap: 15px;
-            margin: 20px 0;
+            padding: 15px;
+            border-radius: var(--border-radius);
+            transition: var(--transition);
         }
 
-        .benefit-card {
-            background: linear-gradient(135deg, #f0f9f6, #e8f5f0);
-            border-radius: 15px;
-            padding: 25px 20px;
-            text-align: center;
-            border: 2px solid #1d7c4d;
-            transition: all 0.3s ease;
-            cursor: pointer;
-        }
-
-        .benefit-card:hover {
-            background: linear-gradient(135deg, #1d7c4d, #0f5c3a);
-            color: white;
-            transform: translateY(-8px);
-            box-shadow: 0 10px 25px rgba(29, 124, 77, 0.4);
+        .benefit-item:hover {
+            background: var(--background-light);
         }
 
         .benefit-icon {
-            font-size: 40px;
-            margin-bottom: 12px;
-        }
-
-        .benefit-text {
-            font-size: 14px;
-            font-weight: 600;
-        }
-
-        .marketplace-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
-            gap: 15px;
-            margin: 20px 0;
-        }
-
-        .marketplace-card {
-            background: #f8f9fa;
-            border-radius: 15px;
-            padding: 25px 15px;
-            text-align: center;
-            transition: all 0.3s ease;
-            border: 2px solid transparent;
-            cursor: pointer;
-        }
-
-        .marketplace-card:hover {
-            background: #1d7c4d;
-            color: white;
-            transform: translateY(-8px);
-            box-shadow: 0 10px 25px rgba(29, 124, 77, 0.4);
-            border-color: #0f5c3a;
-        }
-
-        .mp-icon {
-            font-size: 45px;
-            margin-bottom: 10px;
-        }
-
-        .mp-name {
-            font-size: 14px;
-            font-weight: 700;
-            margin-bottom: 8px;
-        }
-
-        .mp-status {
-            font-size: 11px;
-            opacity: 0.8;
-            margin-top: 5px;
-        }
-
-        .features-list {
-            list-style: none;
-            padding: 0;
-        }
-
-        .features-list li {
-            padding: 16px;
-            background: #f8f9fa;
-            border-radius: 10px;
-            margin-bottom: 10px;
-            font-size: 15px;
-            color: #333;
+            width: 60px;
+            height: 60px;
+            background: linear-gradient(135deg, var(--primary-light), var(--primary-color));
+            border-radius: 50%;
             display: flex;
             align-items: center;
-            gap: 12px;
-            border-left: 4px solid #1d7c4d;
-            transition: all 0.3s;
-        }
-
-        .features-list li:hover {
-            background: #e8f5f0;
-            transform: translateX(8px);
-        }
-
-        .features-list li::before {
-            content: '✓';
-            color: #e74c3c;
-            font-weight: bold;
-            font-size: 20px;
+            justify-content: center;
+            font-size: 24px;
+            color: white;
             flex-shrink: 0;
         }
 
-        .contact-section {
-            background: linear-gradient(135deg, #f0f9f6, #e8f5f0);
-            border-radius: 15px;
-            padding: 25px;
-            margin: 25px 0;
-            border: 2px solid #1d7c4d;
+        .benefit-text h4 {
+            font-size: 14px;
+            font-weight: 700;
+            margin-bottom: 4px;
         }
 
-        .contact-item {
-            background: white;
-            border-radius: 12px;
-            padding: 18px;
-            margin-bottom: 12px;
+        .benefit-text p {
+            font-size: 12px;
+            color: var(--text-light);
+        }
+
+        /* ==================== CATEGORIES SECTION ==================== */
+        .categories {
+            padding: 60px 0;
+        }
+
+        .categories-grid {
+            display: grid;
+            grid-template-columns: repeat(6, 1fr);
+            gap: 20px;
+        }
+
+        .category-card {
+            background: var(--background-white);
+            border-radius: var(--border-radius);
+            padding: 25px 15px;
+            text-align: center;
+            transition: var(--transition);
+            cursor: pointer;
+            border: 2px solid transparent;
+        }
+
+        .category-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 30px var(--shadow-medium);
+            border-color: var(--primary-color);
+        }
+
+        .category-icon {
+            width: 70px;
+            height: 70px;
+            background: linear-gradient(135deg, #fff5e6, #ffe4c4);
+            border-radius: 50%;
             display: flex;
             align-items: center;
-            gap: 15px;
-            transition: all 0.3s ease;
-            cursor: pointer;
-            border-left: 4px solid #1d7c4d;
+            justify-content: center;
+            margin: 0 auto 15px;
+            font-size: 28px;
+            color: var(--primary-color);
+            transition: var(--transition);
         }
 
-        .contact-item:hover {
-            background: #f0f9f6;
-            transform: translateX(8px);
-            box-shadow: 0 4px 15px rgba(29, 124, 77, 0.2);
+        .category-card:hover .category-icon {
+            background: var(--primary-color);
+            color: white;
         }
 
-        .icon {
-            font-size: 30px;
-            min-width: 45px;
-            text-align: center;
-        }
-
-        .contact-info {
-            flex: 1;
-        }
-
-        .contact-label {
-            font-size: 11px;
-            color: #666;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
+        .category-card h4 {
+            font-size: 14px;
+            font-weight: 600;
             margin-bottom: 5px;
         }
 
-        .contact-value {
-            font-size: 15px;
-            color: #0f5c3a;
-            font-weight: 700;
+        .category-card span {
+            font-size: 12px;
+            color: var(--text-light);
         }
 
-        .stats-banner {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        /* ==================== PRODUCTS SECTION ==================== */
+        .products {
+            padding: 60px 0;
+            background: var(--background-white);
+        }
+
+        .products-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 40px;
+            flex-wrap: wrap;
+            gap: 20px;
+        }
+
+        .products-tabs {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+
+        .products-tab {
+            padding: 10px 25px;
+            background: var(--background-light);
+            border: none;
+            border-radius: 50px;
+            font-size: 13px;
+            font-weight: 600;
+            font-family: inherit;
+            cursor: pointer;
+            transition: var(--transition);
+        }
+
+        .products-tab:hover,
+        .products-tab.active {
+            background: var(--primary-color);
             color: white;
-            padding: 25px;
-            border-radius: 15px;
-            margin: 25px 0;
-            text-align: center;
-            box-shadow: 0 10px 30px rgba(102, 126, 234, 0.3);
         }
 
-        .stats-banner h2 {
-            font-size: 24px;
+        .products-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 25px;
+        }
+
+        .product-card {
+            background: var(--background-white);
+            border-radius: var(--border-radius);
+            overflow: hidden;
+            box-shadow: 0 5px 20px var(--shadow-light);
+            transition: var(--transition);
+            position: relative;
+        }
+
+        .product-card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 20px 40px var(--shadow-medium);
+        }
+
+        .product-badges {
+            position: absolute;
+            top: 15px;
+            left: 15px;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            z-index: 10;
+        }
+
+        .product-badge {
+            padding: 5px 12px;
+            border-radius: 5px;
+            font-size: 11px;
+            font-weight: 700;
+            text-transform: uppercase;
+        }
+
+        .badge-sale {
+            background: var(--danger-color);
+            color: white;
+        }
+
+        .badge-new {
+            background: var(--success-color);
+            color: white;
+        }
+
+        .badge-hot {
+            background: var(--primary-color);
+            color: white;
+        }
+
+        .product-wishlist {
+            position: absolute;
+            top: 15px;
+            right: 15px;
+            width: 40px;
+            height: 40px;
+            background: white;
+            border: none;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: var(--transition);
+            box-shadow: 0 3px 10px var(--shadow-light);
+            z-index: 10;
+        }
+
+        .product-wishlist:hover {
+            background: var(--danger-color);
+            color: white;
+        }
+
+        .product-image {
+            position: relative;
+            padding: 20px;
+            background: #f8f8f8;
+            overflow: hidden;
+        }
+
+        .product-image img {
+            width: 100%;
+            height: 200px;
+            object-fit: contain;
+            transition: var(--transition);
+        }
+
+        .product-card:hover .product-image img {
+            transform: scale(1.1);
+        }
+
+        .product-quick-actions {
+            position: absolute;
+            bottom: -50px;
+            left: 50%;
+            transform: translateX(-50%);
+            display: flex;
+            gap: 10px;
+            transition: var(--transition);
+        }
+
+        .product-card:hover .product-quick-actions {
+            bottom: 20px;
+        }
+
+        .quick-action-btn {
+            width: 45px;
+            height: 45px;
+            background: white;
+            border: none;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: var(--transition);
+            box-shadow: 0 3px 10px var(--shadow-medium);
+        }
+
+        .quick-action-btn:hover {
+            background: var(--primary-color);
+            color: white;
+        }
+
+        .product-info {
+            padding: 20px;
+        }
+
+        .product-category {
+            font-size: 11px;
+            color: var(--primary-color);
+            text-transform: uppercase;
+            font-weight: 600;
+            letter-spacing: 1px;
+            margin-bottom: 8px;
+        }
+
+        .product-title {
+            font-size: 15px;
+            font-weight: 600;
+            color: var(--text-color);
+            margin-bottom: 10px;
+            line-height: 1.4;
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+        }
+
+        .product-title:hover {
+            color: var(--primary-color);
+        }
+
+        .product-rating {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-bottom: 12px;
+        }
+
+        .stars {
+            color: #ffc107;
+            font-size: 12px;
+        }
+
+        .rating-count {
+            font-size: 12px;
+            color: var(--text-light);
+        }
+
+        .product-price {
+            display: flex;
+            align-items: center;
+            gap: 10px;
             margin-bottom: 15px;
         }
 
-        .stats-grid {
-            display: grid;
-            grid-template-columns: repeat(3, 1fr);
-            gap: 15px;
-            margin-top: 15px;
+        .price-current {
+            font-size: 22px;
+            font-weight: 800;
+            color: var(--primary-color);
         }
 
-        .stat-card {
-            background: rgba(255, 255, 255, 0.2);
-            border-radius: 12px;
-            padding: 15px;
-            backdrop-filter: blur(10px);
+        .price-old {
+            font-size: 14px;
+            color: var(--text-light);
+            text-decoration: line-through;
         }
 
-        .stat-value {
-            font-size: 32px;
-            font-weight: 700;
-            margin-bottom: 5px;
+        .price-discount {
+            font-size: 12px;
+            background: #ffe6e6;
+            color: var(--danger-color);
+            padding: 3px 8px;
+            border-radius: 5px;
+            font-weight: 600;
         }
 
-        .stat-label {
-            font-size: 11px;
-            opacity: 0.9;
+        .product-shipping {
+            font-size: 12px;
+            color: var(--success-color);
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            margin-bottom: 15px;
         }
 
-        .footer {
-            text-align: center;
-            margin-top: 40px;
-            padding-top: 25px;
-            border-top: 2px solid #e8f5f0;
-            color: #999;
+        .product-btn {
+            width: 100%;
+            padding: 12px;
+            background: linear-gradient(135deg, var(--primary-color), var(--primary-dark));
+            color: white;
+            border: none;
+            border-radius: 8px;
             font-size: 13px;
+            font-weight: 600;
+            font-family: inherit;
+            cursor: pointer;
+            transition: var(--transition);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
         }
 
-        .footer a {
-            color: #1d7c4d;
-            text-decoration: none;
-            font-weight: 700;
-            margin: 0 12px;
-            transition: color 0.3s;
+        .product-btn:hover {
+            box-shadow: 0 5px 15px rgba(228, 131, 18, 0.4);
         }
 
-        .footer a:hover {
-            color: #e74c3c;
-            text-decoration: underline;
+        /* ==================== FEATURED PRODUCT ==================== */
+        .featured-product {
+            padding: 60px 0;
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+            color: white;
         }
 
-        .cta-box {
-            background: linear-gradient(135deg, #ffd700, #ffed4e);
-            border-radius: 15px;
-            padding: 25px;
+        .featured-content {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 60px;
+            align-items: center;
+        }
+
+        .featured-image {
+            position: relative;
             text-align: center;
-            margin: 25px 0;
-            border: 3px solid #f0c800;
-            box-shadow: 0 8px 25px rgba(255, 215, 0, 0.4);
         }
 
-        .cta-box h2 {
-            color: #0f5c3a;
-            font-size: 26px;
-            margin-bottom: 12px;
+        .featured-image img {
+            max-width: 400px;
+            margin: 0 auto;
+            filter: drop-shadow(0 20px 40px rgba(0, 0, 0, 0.3));
         }
 
-        .cta-box p {
-            color: #333;
-            font-size: 15px;
+        .featured-discount {
+            position: absolute;
+            top: 0;
+            right: 50px;
+            width: 100px;
+            height: 100px;
+            background: var(--primary-color);
+            border-radius: 50%;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            animation: bounce 2s infinite;
+        }
+
+        @keyframes bounce {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-10px); }
+        }
+
+        .featured-discount span:first-child {
+            font-size: 28px;
+            font-weight: 800;
+        }
+
+        .featured-discount span:last-child {
+            font-size: 12px;
+        }
+
+        .featured-text .section-subtitle {
+            text-align: left;
+            color: var(--primary-color);
+            margin-bottom: 10px;
+        }
+
+        .featured-text h2 {
+            font-size: 36px;
+            font-weight: 800;
             margin-bottom: 20px;
         }
 
-        @media (max-width: 600px) {
-            .container {
-                padding: 25px 20px;
-            }
+        .featured-text p {
+            font-size: 16px;
+            line-height: 1.8;
+            color: rgba(255, 255, 255, 0.8);
+            margin-bottom: 25px;
+        }
 
-            h1 {
-                font-size: 26px;
-            }
+        .featured-list {
+            margin-bottom: 30px;
+        }
 
-            .avatar {
-                font-size: 60px;
-            }
+        .featured-list li {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 12px;
+            font-size: 14px;
+        }
 
-            .telegram-btn {
-                font-size: 18px;
-                padding: 18px;
-            }
+        .featured-list li i {
+            color: var(--primary-color);
+        }
 
-            .stats-grid {
+        .featured-price {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+            margin-bottom: 25px;
+        }
+
+        .featured-price .price-current {
+            font-size: 36px;
+        }
+
+        .featured-timer {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 30px;
+        }
+
+        .timer-box {
+            background: rgba(255, 255, 255, 0.1);
+            padding: 15px 20px;
+            border-radius: 10px;
+            text-align: center;
+            min-width: 70px;
+        }
+
+        .timer-box span:first-child {
+            display: block;
+            font-size: 28px;
+            font-weight: 800;
+            color: var(--primary-color);
+        }
+
+        .timer-box span:last-child {
+            font-size: 11px;
+            text-transform: uppercase;
+        }
+
+        /* ==================== TESTIMONIALS ==================== */
+        .testimonials {
+            padding: 60px 0;
+            background: var(--background-light);
+        }
+
+        .testimonials-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 30px;
+        }
+
+        .testimonial-card {
+            background: var(--background-white);
+            padding: 30px;
+            border-radius: var(--border-radius);
+            box-shadow: 0 5px 20px var(--shadow-light);
+            transition: var(--transition);
+        }
+
+        .testimonial-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 40px var(--shadow-medium);
+        }
+
+        .testimonial-header {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+
+        .testimonial-avatar {
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, var(--primary-light), var(--primary-color));
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 24px;
+            font-weight: 700;
+        }
+
+        .testimonial-info h4 {
+            font-size: 15px;
+            font-weight: 600;
+            margin-bottom: 3px;
+        }
+
+        .testimonial-info span {
+            font-size: 12px;
+            color: var(--text-light);
+        }
+
+        .testimonial-rating {
+            color: #ffc107;
+            font-size: 14px;
+            margin-bottom: 15px;
+        }
+
+        .testimonial-text {
+            font-size: 14px;
+            line-height: 1.7;
+            color: var(--text-color);
+            font-style: italic;
+        }
+
+        .testimonial-text::before {
+            content: '"';
+            font-size: 40px;
+            color: var(--primary-color);
+            font-family: Georgia, serif;
+            line-height: 0;
+            vertical-align: bottom;
+        }
+
+        /* ==================== BRANDS ==================== */
+        .brands {
+            padding: 50px 0;
+            background: var(--background-white);
+        }
+
+        .brands-grid {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 30px;
+        }
+
+        .brand-item {
+            flex: 1;
+            min-width: 120px;
+            text-align: center;
+            opacity: 0.5;
+            filter: grayscale(100%);
+            transition: var(--transition);
+        }
+
+        .brand-item:hover {
+            opacity: 1;
+            filter: grayscale(0%);
+        }
+
+        .brand-item img {
+            max-height: 50px;
+            margin: 0 auto;
+        }
+
+        /* ==================== NEWSLETTER ==================== */
+        .newsletter {
+            padding: 60px 0;
+            background: linear-gradient(135deg, var(--primary-color) 0%, var(--primary-dark) 100%);
+            color: white;
+        }
+
+        .newsletter-content {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 40px;
+            flex-wrap: wrap;
+        }
+
+        .newsletter-text h3 {
+            font-size: 28px;
+            font-weight: 700;
+            margin-bottom: 10px;
+        }
+
+        .newsletter-text p {
+            font-size: 15px;
+            opacity: 0.9;
+        }
+
+        .newsletter-form {
+            display: flex;
+            gap: 10px;
+            flex: 1;
+            max-width: 500px;
+        }
+
+        .newsletter-form input {
+            flex: 1;
+            padding: 16px 25px;
+            border: none;
+            border-radius: 50px;
+            font-size: 14px;
+            font-family: inherit;
+        }
+
+        .newsletter-form input:focus {
+            outline: none;
+        }
+
+        .newsletter-form button {
+            padding: 16px 35px;
+            background: var(--text-color);
+            color: white;
+            border: none;
+            border-radius: 50px;
+            font-size: 14px;
+            font-weight: 600;
+            font-family: inherit;
+            cursor: pointer;
+            transition: var(--transition);
+            white-space: nowrap;
+        }
+
+        .newsletter-form button:hover {
+            background: #222;
+        }
+
+        /* ==================== FOOTER ==================== */
+        .footer {
+            background: #1a1a2e;
+            color: white;
+            padding: 60px 0 0;
+        }
+
+        .footer-grid {
+            display: grid;
+            grid-template-columns: 2fr 1fr 1fr 1fr 1.5fr;
+            gap: 40px;
+            padding-bottom: 40px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .footer-col h4 {
+            font-size: 16px;
+            font-weight: 700;
+            margin-bottom: 25px;
+            color: var(--primary-color);
+        }
+
+        .footer-about p {
+            font-size: 14px;
+            line-height: 1.8;
+            color: rgba(255, 255, 255, 0.7);
+            margin-bottom: 20px;
+        }
+
+        .footer-social {
+            display: flex;
+            gap: 12px;
+        }
+
+        .footer-social a {
+            width: 40px;
+            height: 40px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: var(--transition);
+        }
+
+        .footer-social a:hover {
+            background: var(--primary-color);
+        }
+
+        .footer-links li {
+            margin-bottom: 12px;
+        }
+
+        .footer-links a {
+            font-size: 14px;
+            color: rgba(255, 255, 255, 0.7);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .footer-links a:hover {
+            color: var(--primary-color);
+            padding-left: 5px;
+        }
+
+        .footer-contact li {
+            display: flex;
+            gap: 12px;
+            margin-bottom: 15px;
+            font-size: 14px;
+            color: rgba(255, 255, 255, 0.7);
+        }
+
+        .footer-contact li i {
+            color: var(--primary-color);
+            width: 20px;
+        }
+
+        .payment-methods {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+            margin-top: 15px;
+        }
+
+        .payment-methods img {
+            height: 30px;
+            background: white;
+            padding: 5px 10px;
+            border-radius: 5px;
+        }
+
+        .footer-bottom {
+            padding: 25px 0;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 15px;
+        }
+
+        .footer-bottom p {
+            font-size: 13px;
+            color: rgba(255, 255, 255, 0.7);
+        }
+
+        .footer-bottom-links {
+            display: flex;
+            gap: 25px;
+        }
+
+        .footer-bottom-links a {
+            font-size: 13px;
+            color: rgba(255, 255, 255, 0.7);
+        }
+
+        .footer-bottom-links a:hover {
+            color: var(--primary-color);
+        }
+
+        /* ==================== BACK TO TOP ==================== */
+        .back-to-top {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            width: 50px;
+            height: 50px;
+            background: var(--primary-color);
+            color: white;
+            border: none;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 20px;
+            cursor: pointer;
+            opacity: 0;
+            visibility: hidden;
+            transition: var(--transition);
+            box-shadow: 0 5px 20px rgba(228, 131, 18, 0.4);
+            z-index: 999;
+        }
+
+        .back-to-top.visible {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        .back-to-top:hover {
+            transform: translateY(-5px);
+        }
+
+        /* ==================== RESPONSIVE ==================== */
+        @media (max-width: 1200px) {
+            .products-grid {
                 grid-template-columns: repeat(3, 1fr);
-                gap: 10px;
+            }
+        }
+
+        @media (max-width: 992px) {
+            .hero-content,
+            .featured-content {
+                grid-template-columns: 1fr;
+                text-align: center;
             }
 
-            .stat-value {
-                font-size: 24px;
+            .hero-text h1 {
+                font-size: 36px;
             }
 
-            .marketplace-grid {
-                grid-template-columns: repeat(2, 1fr);
+            .hero-features {
+                justify-content: center;
+            }
+
+            .hero-buttons {
+                justify-content: center;
             }
 
             .benefits-grid {
                 grid-template-columns: repeat(2, 1fr);
             }
+
+            .categories-grid {
+                grid-template-columns: repeat(3, 1fr);
+            }
+
+            .products-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+
+            .testimonials-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .footer-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+
+            .featured-text .section-subtitle,
+            .featured-text h2,
+            .featured-text p {
+                text-align: center;
+            }
+
+            .featured-list {
+                display: inline-block;
+                text-align: left;
+            }
+
+            .featured-price,
+            .featured-timer {
+                justify-content: center;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .header-top-content {
+                justify-content: center;
+                text-align: center;
+            }
+
+            .header-main-content {
+                flex-wrap: wrap;
+            }
+
+            .search-bar {
+                order: 3;
+                max-width: 100%;
+                width: 100%;
+            }
+
+            .nav-list {
+                display: none;
+            }
+
+            .mobile-menu-btn {
+                display: block;
+            }
+
+            .hero {
+                margin-top: 200px;
+            }
+
+            .hero-text h1 {
+                font-size: 28px;
+            }
+
+            .hero-features {
+                flex-direction: column;
+                align-items: center;
+            }
+
+            .benefits-grid,
+            .categories-grid {
+                grid-template-columns: 1fr 1fr;
+            }
+
+            .newsletter-content {
+                flex-direction: column;
+                text-align: center;
+            }
+
+            .newsletter-form {
+                flex-direction: column;
+                width: 100%;
+            }
+
+            .footer-grid {
+                grid-template-columns: 1fr;
+                text-align: center;
+            }
+
+            .footer-social {
+                justify-content: center;
+            }
+
+            .footer-links a {
+                justify-content: center;
+            }
+
+            .footer-contact li {
+                justify-content: center;
+            }
+
+            .footer-bottom {
+                flex-direction: column;
+                text-align: center;
+            }
+        }
+
+        @media (max-width: 576px) {
+            .hero-text h1 {
+                font-size: 24px;
+            }
+
+            .btn {
+                padding: 12px 24px;
+                font-size: 12px;
+            }
+
+            .products-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .products-tabs {
+                justify-content: center;
+            }
+
+            .categories-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+
+            .benefits-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .featured-timer {
+                flex-wrap: wrap;
+            }
         }
     </style>
 </head>
 <body>
-    <div class="container">
-        <div class="header">
-            <div class="avatar">💰</div>
-            <h1>Marketing de Milhões</h1>
-            <p class="subtitle">Comparador Inteligente de Preços em Tempo Real</p>
-            <div class="badge">✨ Economize em TODAS as suas compras!</div>
-        </div>
 
-        <div class="savings-banner">
-            <h2>💸 Pare de Pagar Caro!</h2>
-            <p>Compare preços em 6+ lojas e veja sua economia na hora!</p>
-        </div>
-
-        <a href="https://t.me/marketingdemilhoes_bot" target="_blank" class="telegram-btn">
-            <span>✈️</span>
-            <span>ABRIR BOT AGORA - É GRÁTIS!</span>
-        </a>
-
-        <div class="stats-banner">
-            <h2>📊 Resultados Reais</h2>
-            <div class="stats-grid">
-                <div class="stat-card">
-                    <div class="stat-value">500+</div>
-                    <div class="stat-label">Usuários Ativos</div>
-                </div>
-                <div class="stat-card">
-                    <div class="stat-value">5.000+</div>
-                    <div class="stat-label">Buscas Hoje</div>
-                </div>
-                <div class="stat-card">
-                    <div class="stat-value">R$ 15K+</div>
-                    <div class="stat-label">Economizados</div>
+    <!-- ==================== HEADER ==================== -->
+    <header class="header">
+        <div class="header-top">
+            <div class="container">
+                <div class="header-top-content">
+                    <div class="header-top-left">
+                        <span><i class="fas fa-phone-alt"></i> (11) 99999-9999</span>
+                        <span><i class="fas fa-envelope"></i> contato@megaofertas.com</span>
+                        <span><i class="fas fa-truck"></i> Frete Grátis acima de R$ 199</span>
+                    </div>
+                    <div class="header-top-right">
+                        <a href="#"><i class="fab fa-facebook-f"></i></a>
+                        <a href="#"><i class="fab fa-instagram"></i></a>
+                        <a href="#"><i class="fab fa-twitter"></i></a>
+                        <a href="#"><i class="fab fa-youtube"></i></a>
+                    </div>
                 </div>
             </div>
         </div>
 
-        <h3>
-            <span>⚡</span>
-            <span>Por Que Usar Nosso Bot?</span>
-        </h3>
-        <div class="benefits-grid">
-            <div class="benefit-card">
-                <div class="benefit-icon">🔍</div>
-                <div class="benefit-text">Busca Instantânea</div>
-            </div>
-            <div class="benefit-card">
-                <div class="benefit-icon">📊</div>
-                <div class="benefit-text">Comparação Automática</div>
-            </div>
-            <div class="benefit-card">
-                <div class="benefit-icon">💰</div>
-                <div class="benefit-text">Menores Preços</div>
-            </div>
-            <div class="benefit-card">
-                <div class="benefit-icon">⚡</div>
-                <div class="benefit-text">Resultado Imediato</div>
-            </div>
-        </div>
+        <div class="header-main">
+            <div class="container">
+                <div class="header-main-content">
+                    <a href="#" class="logo">
+                        <div class="logo-icon">
+                            <i class="fas fa-bolt"></i>
+                        </div>
+                        <div class="logo-text">Mega<span>Ofertas</span></div>
+                    </a>
 
-        <h3>
-            <span>🛒</span>
-            <span>Lojas Integradas</span>
-        </h3>
-        <div class="marketplace-grid">
-            <div class="marketplace-card">
-                <div class="mp-icon">🛍️</div>
-                <div class="mp-name">Shopee</div>
-                <div class="mp-status">✓ Ativo</div>
-            </div>
-            <div class="marketplace-card">
-                <div class="mp-icon">📦</div>
-                <div class="mp-name">Mercado Livre</div>
-                <div class="mp-status">✓ Ativo</div>
-            </div>
-            <div class="marketplace-card">
-                <div class="mp-icon">📱</div>
-                <div class="mp-name">Amazon</div>
-                <div class="mp-status">✓ Ativo</div>
-            </div>
-            <div class="marketplace-card">
-                <div class="mp-icon">🏬</div>
-                <div class="mp-name">Magalu</div>
-                <div class="mp-status">✓ Ativo</div>
-            </div>
-            <div class="marketplace-card">
-                <div class="mp-icon">🌏</div>
-                <div class="mp-name">AliExpress</div>
-                <div class="mp-status">✓ Em breve</div>
-            </div>
-            <div class="marketplace-card">
-                <div class="mp-icon">🚀</div>
-                <div class="mp-name">Olist</div>
-                <div class="mp-status">✓ Em breve</div>
-            </div>
-        </div>
+                    <div class="search-bar">
+                        <input type="text" placeholder="O que você está procurando?">
+                        <button><i class="fas fa-search"></i></button>
+                    </div>
 
-        <div class="cta-box">
-            <h2>🎯 Como Funciona?</h2>
-            <p><strong>1.</strong> Clique no botão azul do Telegram<br>
-            <strong>2.</strong> Digite o produto que procura<br>
-            <strong>3.</strong> Veja os preços comparados<br>
-            <strong>4.</strong> Compre no mais barato!</p>
-        </div>
+                    <div class="header-actions">
+                        <div class="header-action-item">
+                            <i class="far fa-user"></i>
+                            <span>Entrar</span>
+                        </div>
+                        <div class="header-action-item">
+                            <i class="far fa-heart"></i>
+                            <span>Favoritos</span>
+                        </div>
+                        <div class="header-action-item cart-icon">
+                            <i class="fas fa-shopping-cart"></i>
+                            <span>Carrinho</span>
+                            <div class="cart-badge">3</div>
+                        </div>
+                    </div>
 
-        <h3>
-            <span>⚡</span>
-            <span>Principais Recursos</span>
-        </h3>
-        <ul class="features-list">
-            <li>Busca simultânea em 6+ lojas online</li>
-            <li>Comparação automática de preços em tempo real</li>
-            <li>Destaque dos produtos mais baratos</li>
-            <li>Links diretos para compra segura</li>
-            <li>Alertas de promoções e descontos</li>
-            <li>Interface rápida e intuitiva no Telegram</li>
-            <li>Economia transparente mostrada na hora</li>
-            <li>Atualização constante de preços</li>
-        </ul>
-
-        <a href="https://t.me/marketingdemilhoes_bot" target="_blank" class="telegram-btn">
-            <span>🚀</span>
-            <span>COMEÇAR A ECONOMIZAR AGORA!</span>
-        </a>
-
-        <div class="contact-section">
-            <h3>
-                <span>📞</span>
-                <span>Fale Conosco</span>
-            </h3>
-            
-            <a href="https://t.me/marketingdemilhoes_bot" target="_blank" class="contact-item">
-                <div class="icon">✈️</div>
-                <div class="contact-info">
-                    <div class="contact-label">Bot Telegram</div>
-                    <div class="contact-value">@marketingdemilhoes_bot</div>
+                    <button class="mobile-menu-btn">
+                        <i class="fas fa-bars"></i>
+                    </button>
                 </div>
-            </a>
-
-            <a href="mailto:marketingdemilhoes@gmail.com" class="contact-item">
-                <div class="icon">📧</div>
-                <div class="contact-info">
-                    <div class="contact-label">E-mail</div>
-                    <div class="contact-value">marketingdemilhoes@gmail.com</div>
-                </div>
-            </a>
-
-            <a href="https://t.me/marketingdemilhoes" target="_blank" class="contact-item">
-                <div class="icon">💬</div>
-                <div class="contact-info">
-                    <div class="contact-label">Grupo Telegram</div>
-                    <div class="contact-value">@marketingdemilhoes</div>
-                </div>
-            </a>
+            </div>
         </div>
 
-        <div class="footer">
-            <p><strong>✨ Marketing de Milhões</strong> - Sua Economia em Primeiro Lugar</p>
-            <p style="margin: 15px 0;">
-                <a href="https://t.me/marketingdemilhoes_bot" target="_blank">Bot</a>
-                <a href="https://t.me/marketingdemilhoes" target="_blank">Grupo</a>
-                <a href="mailto:marketingdemilhoes@gmail.com">Contato</a>
-            </p>
-            <p style="margin-top: 20px; font-size: 11px; color: #ccc;">
-                © 2024 Marketing de Milhões - Todos os direitos reservados<br>
-                Sistema Inteligente de Comparação de Preços | v3.0.0
-            </p>
-        </div>
-    </div>
+        <nav class="nav">
+            <div class="container">
+                <ul class="nav-list">
+                    <li class="nav-item"><a href="#" class="nav-link active"><i class="fas fa-home"></i> Início</a></li>
+                    <li class="nav-item"><a href="#" class="nav-link"><i class="fas fa-tags"></i> Ofertas</a></li>
+                    <li class="nav-item"><a href="#" class="nav-link"><i class="fas fa-laptop"></i> Eletrônicos</a></li>
+                    <li class="nav-item"><a href="#" class="nav-link"><i class="fas fa-tshirt"></i> Moda</a></li>
+                    <li class="nav-item"><a href="#" class="nav-link"><i class="fas fa-couch"></i> Casa</a></li>
+                    <li class="nav-item"><a href="#" class="nav-link"><i class="fas fa-dumbbell"></i> Esportes</a></li>
+                    <li class="nav-item"><a href="#" class="nav-link"><i class="fas fa-spa"></i> Beleza</a></li>
+                    <li class="nav-item"><a href="#" class="nav-link"><i class="fas fa-percent"></i> Cupons</a></li>
+                </ul>
+            </div>
+        </nav>
+    </header>
 
+    <!-- ==================== HERO SECTION ==================== -->
+    <section class="hero">
+        <div class="container">
+            <div class="hero-content">
+                <div class="hero-text">
+                    <h1>Descubra os <span>Melhores Produtos</span> com Descontos Exclusivos</h1>
+                    <p>Encontre ofertas incríveis em milhares de produtos selecionados especialmente para você. Economize até 70% em marcas premium!</p>
+                    <div class="hero-buttons">
+                        <a href="#produtos" class="btn btn-primary">Ver Ofertas <i class="fas fa-arrow-right"></i></a>
+                        <a href="#" class="btn btn-secondary">Como Funciona</a>
+                    </div>
+                    <div class="hero-features">
+                        <div class="hero-feature">
+                            <i class="fas fa-shield-alt"></i>
+                            <span>Compra Segura</span>
+                        </div>
+                        <div class="hero-feature">
+                            <i class="fas fa-undo"></i>
+                            <span>30 Dias Garantia</span>
+                        </div>
+                        <div class="hero-feature">
+                            <i class="fas fa-headset"></i>
+                            <span>Suporte 24/7</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="hero-image">
+                    <img src="https://images.unsplash.com/photo-1523275335684-37898b6baf30?w=500" alt="Produtos em destaque">
+                    <div class="hero-badge">Até 70% OFF</div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ==================== BENEFITS BAR ==================== -->
+    <section class="benefits-bar">
+        <div class="container">
+            <div class="benefits-grid">
+                <div class="benefit-item">
+                    <div class="benefit-icon">
+                        <i class="fas fa-truck"></i>
+                    </div>
+                    <div class="benefit-text">
+                        <h4>Frete Grátis</h4>
+                        <p>Em compras acima de R$ 199</p>
+                    </div>
+                </div>
+                <div class="benefit-item">
+                    <div class="benefit-icon">
+                        <i class="fas fa-lock"></i>
+                    </div>
+                    <div class="benefit-text">
+                        <h4>Pagamento Seguro</h4>
+                        <p>Criptografia SSL 256-bit</p>
+                    </div>
+                </div>
+                <div class="benefit-item">
+                    <div class="benefit-icon">
+                        <i class="fas fa-sync-alt"></i>
+                    </div>
+                    <div class="benefit-text">
+                        <h4>Troca Garantida</h4>
+                        <p>30 dias para devolução</p>
+                    </div>
+                </div>
+                <div class="benefit-item">
+                    <div class="benefit-icon">
+                        <i class="fas fa-headset"></i>
+                    </div>
+                    <div class="benefit-text">
+                        <h4>Suporte Premium</h4>
+                        <p>Atendimento especializado</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ==================== CATEGORIES ==================== -->
+    <section class="categories">
+        <div class="container">
+            <h2 class="section-title"><span class="accent-border">Categorias</span></h2>
+            <p class="section-subtitle">Navegue por nossas categorias mais populares</p>
+            <div class="categories-grid">
+                <div class="category-card">
+                    <div class="category-icon"><i class="fas fa-mobile-alt"></i></div>
+                    <h4>Smartphones</h4>
+                    <span>+500 produtos</span>
+                </div>
+                <div class="category-card">
+                    <div class="category-icon"><i class="fas fa-laptop"></i></div>
+                    <h4>Notebooks</h4>
+                    <span>+320 produtos</span>
+                </div>
+                <div class="category-card">
+                    <div class="category-icon"><i class="fas fa-headphones"></i></div>
+                    <h4>Áudio</h4>
+                    <span>+280 produtos</span>
+                </div>
+                <div class="category-card">
+                    <div class="category-icon"><i class="fas fa-camera"></i></div>
+                    <h4>Câmeras</h4>
+                    <span>+150 produtos</span>
+                </div>
+                <div class="category-card">
+                    <div class="category-icon"><i class="fas fa-gamepad"></i></div>
+                    <h4>Games</h4>
+                    <span>+400 produtos</span>
+                </div>
+                <div class="category-card">
+                    <div class="category-icon"><i class="fas fa-tv"></i></div>
+                    <h4>Smart TVs</h4>
+                    <span>+200 produtos</span>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ==================== PRODUCTS ==================== -->
+    <section class="products" id="produtos">
+        <div class="container">
+            <div class="products-header">
+                <div>
+                    <h2 class="section-title" style="text-align: left; margin-bottom: 5px;"><span class="accent-border">Produtos em Destaque</span></h2>
+                    <p style="color: var(--text-light);">Os melhores produtos com os melhores preços</p>
+                </div>
+                <div class="products-tabs">
+                    <button class="products-tab active">Todos</button>
+                    <button class="products-tab">Mais Vendidos</button>
+                    <button class="products-tab">Novidades</button>
+                    <button class="products-tab">Em Promoção</button>
+                </div>
+            </div>
+
+            <div class="products-grid">
+                <!-- Product 1 -->
+                <div class="product-card">
+                    <div class="product-badges">
+                        <span class="product-badge badge-sale">-35%</span>
+                        <span class="product-badge badge-hot">Hot</span>
+                    </div>
+                    <button class="product-wishlist"><i class="far fa-heart"></i></button>
+                    <div class="product-image">
+                        <img src="https://images.unsplash.com/photo-1511707171634-5f897ff02aa9?w=300" alt="Smartphone">
+                        <div class="product-quick-actions">
+                            <button class="quick-action-btn"><i class="fas fa-eye"></i></button>
+                            <button class="quick-action-btn"><i class="fas fa-sync-alt"></i></button>
+                        </div>
+                    </div>
+                    <div class="product-info">
+                        <span class="product-category">Smartphones</span>
+                        <h3 class="product-title">iPhone 15 Pro Max 256GB - Titânio Natural</h3>
+                        <div class="product-rating">
+                            <div class="stars">
+                                <i class="fas fa-star"></i>
+                                <i class="fas fa-star"></i>
+                                <i class="fas fa-star"></i>
+                                <i class="fas fa-star"></i>
+                                <i class="fas fa-star-half-alt"></i>
+                            </div>
+                            <span class="rating-count">(2.547 avaliações)</span>
+                        </div>
+                        <div class="product-price">
+                            <span class="price-current">R$ 7.499</span>
+                            <span class="price-old">R$ 9.999</span>
+                            <span class="price-discount">-25%</span>
+                        </div>
+                        <div class="product-shipping">
+                            <i class="fas fa-truck"></i> Frete Grátis
+                        </div>
+                        <button class="product-btn">
+                            <i class="fas fa-external-link-alt"></i> Ver Oferta
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Product 2 -->
+                <div class="product-card">
+                    <div class="product-badges">
+                        <span class="product-badge badge-new">Novo</span>
+                    </div>
+                    <button class="product-wishlist"><i class="far fa-heart"></i></button>
+                    <div class="product-image">
+                        <img src="https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=300" alt="Headphone">
+                        <div class="product-quick-actions">
+                            <button class="quick-action-btn"><i class="fas fa-eye"></i></button>
+                            <button class="quick-action-btn"><i class="fas fa-sync-alt"></i></button>
+                        </div>
+                    </div>
+                    <div class="product-info">
+                        <span class="product-category">Áudio</span>
+                        <h3 class="product-title">Sony WH-1000XM5 Headphone Bluetooth Premium</h3>
+                        <div class="product-rating">
+                            <div class="stars">
+                                <i class="fas fa-star"></i>
+                                <i class="fas fa-star"></i>
+                                <i class="fas fa-star"></i>
+                                <i class="fas fa-star"></i>
+                                <i class="fas fa-star"></i>
+                            </div>
+                            <span class="rating-count">(1.823 avaliações)</span>
+                        </div>
+                        <div class="product-price">
+                            <span class="price-current">R$ 1.899</span>
+                            <span class="price-old">R$ 2.499</span>
+                            <span class="price-discount">-24%</span>
+                        </div>
+                        <div class="product-shipping">
+                            <i class="fas fa-truck"></i> Frete Grátis
+                        </div>
+                        <button class="product-btn">
+                            <i class="fas fa-external-link-alt"></i> Ver Oferta
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Product 3 -->
+                <div class="product-card">
+                    <div class="product-badges">
+                        <span class="product-badge badge-sale">-40%</span>
+                    </div>
+                    <button class="product-wishlist"><i class="far fa-heart"></i></button>
+                    <div class="product-image">
+                        <img src="https://images.unsplash.com/photo-1523275335684-37898b6baf30?w=300" alt="Smartwatch">
+                        <div class="product-quick-actions">
+                            <button class="quick-action-btn"><i class="fas fa-eye"></i></button>
+                            <button class="quick-action-btn"><i class="fas fa-sync-alt"></i></button>
+                        </div>
+                    </div>
+                    <div class="product-info">
+                        <span class="product-category">Wearables</span>
+                        <h3 class="product-title">Apple Watch Series 9 GPS 45mm Alumínio</h3>
+                        <div class="product-rating">
+                            <div class="stars">
+                                <i class="fas fa-star"></i>
+                                <i class="fas fa-star"></i>
+                                <i class="fas fa-star"></i>
+                                <i class="fas fa-star"></i>
+                                <i class="far fa-star"></i>
+                            </div>
+                            <span class="rating-count">(987 avaliações)</span>
+                        </div>
+                        <div class="product-price">
+                            <span class="price-current">R$ 3.299</span>
+                            <span class="price-old">R$ 4.499</span>
+                            <span class="price-discount">-27%</span>
+                        </div>
+                        <div class="product-shipping">
+                            <i class="fas fa-truck"></i> Frete Grátis
+                        </div>
+                        <button class="product-btn">
+                            <i class="fas fa-external-link-alt"></i> Ver Oferta
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Product 4 -->
+                <div class="product-card">
+                    <div class="product-badges">
+                        <span class="product-badge badge-hot">Hot</span>
+                    </div>
+                    <button class="product-wishlist"><i class="far fa-heart"></i></button>
+                    <div class="product-image">
+                        <img src="https://images.unsplash.com/photo-1593642632559-0c6d3fc62b89?w=300" alt="Notebook">
+                        <div class="product-quick-actions">
+                            <button class="quick-action-btn"><i class="fas fa-eye"></i></button>
+                            <button class="quick-action-btn"><i class="fas fa-sync-alt"></i></button>
+                        </div>
+                    </div>
+                    <div class="product-info">
+                        <span class="product-category">Notebooks</span>
+                        <h3 class="product-title">MacBook Air M3 15" 256GB SSD 8GB RAM</h3>
+                        <div class="product-rating">
+                            <div class="stars">
+                                <i class="fas fa-star"></i>
+                                <i class="fas fa-star"></i>
+                                <i class="fas fa-star"></i>
+                                <i class="fas fa-star"></i>
+                                <i class="fas fa-star"></i>
+                            </div>
+                            <span class="rating-count">(654 avaliações)</span>
+                        </div>
+                        <div class="product-price">
+                            <span class="price-current">R$ 12.999</span>
+                            <span class="price-old">R$ 15.999</span>
+                            <span class="price-discount">-19%</span>
+                        </div>
+                        <div class="product-shipping">
+                            <i class="fas fa-truck"></i> Frete Grátis
+                        </div>
+                        <button class="product-btn">
+                            <i class="fas fa-external-link-alt"></i> Ver Oferta
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Product 5 -->
+                <div class="product-card">
+                    <div class="product-badges">
+                        <span class="product-badge badge-sale">-50%</span>
+                    </div>
+                    <button class="product-wishlist"><i class="far fa-heart"></i></button>
+                    <div class="product-image">
+                        <img src="https://images.unsplash.com/photo-1585386959984-a4155224a1ad?w=300" alt="Perfume">
+                        <div class="product-quick-actions">
+                            <button class="quick-action-btn"><i class="fas fa-eye"></i></button>
+                            <button class="quick-action-btn"><i class="fas fa-sync-alt"></i></button>
+                        </div>
+                    </div>
+                    <div class="product-info">
+                        <span class="product-category">Perfumaria</span>
+                        <h3 class="product-title">Dior Sauvage Eau de Parfum 100ml Original</h3>
+                        <div class="product-rating">
+                            <div class="stars">
+                                <i class="fas fa-star"></i>
+                                <i class="fas fa-star"></i>
+                                <i class="fas fa-star"></i>
+                                <i class="fas fa-star"></i>
+                                <i class="fas fa-star-half-alt"></i>
+                            </div>
+                            <span class="rating-count">(3.412 avaliações)</span>
+                        </div>
+                        <div class="product-price">
+                            <span class="price-current">R$ 449</span>
+                            <span class="price-old">R$ 899</span>
+                            <span class="price-discount">-50%</span>
+                        </div>
+                        <div class="product-shipping">
+                            <i class="fas fa-truck"></i> Frete Grátis
+                        </div>
+                        <button class="product-btn">
+                            <i class="fas fa-external-link-alt"></i> Ver Oferta
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Product 6 -->
+                <div class="product-card">
+                    <div class="product-badges">
+                        <span class="product-badge badge-new">Novo</span>
+                        <span class="product-badge badge-sale">-30%</span>
+                    </div>
+                    <button class="product-wishlist"><i class="far fa-heart"></i></button>
+                    <div class="product-image">
+                        <img src="https://images.unsplash.com/photo-1606107557195-0e29a4b5b4aa?w=300" alt="Tênis">
+                        <div class="product-quick-actions">
+                            <button class="quick-action-btn"><i class="fas fa-eye"></i></button>
+                            <button class="quick-action-btn"><i class="fas fa-sync-alt"></i></button>
+                        </div>
+                    </div>
+                    <div class="product-info">
+                        <span class="product-category">Esportes</span>
+                        <h3 class="product-title">Nike Air Max 90 Premium - Edição Limitada</h3>
+                        <div class="product-rating">
+                            <div class="stars">
+                                <i class="fas fa-star"></i>
+                                <i class="fas fa-star"></i>
+                                <i class="fas fa-star"></i>
+                                <i class="fas fa-star"></i>
+                                <i class="fas fa-star"></i>
+                            </div>
+                            <span class="rating-count">(1.256 avaliações)</span>
+                        </div>
+                        <div class="product-price">
+                            <span class="price-current">R$ 699</span>
+                            <span class="price-old">R$ 999</span>
+                            <span class="price-discount">-30%</span>
+                        </div>
+                        <div class="product-shipping">
+                            <i class="fas fa-truck"></i> Frete Grátis
+                        </div>
+                        <button class="product-btn">
+                            <i class="fas fa-external-link-alt"></i> Ver Oferta
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Product 7 -->
+                <div class="product-card">
+                    <div class="product-badges">
+                        <span class="product-badge badge-hot">Hot</span>
+                    </div>
+                    <button class="product-wishlist"><i class="far fa-heart"></i></button>
+                    <div class="product-image">
+                        <img src="https://images.unsplash.com/photo-1546868871-7041f2a55e12?w=300" alt="Smart Watch">
+                        <div class="product-quick-actions">
+                            <button class="quick-action-btn"><i class="fas fa-eye"></i></button>
+                            <button class="quick-action-btn"><i class="fas fa-sync-alt"></i></button>
+                        </div>
+                    </div>
+                    <div class="product-info">
+                        <span class="product-category">Wearables</span>
+                        <h3 class="product-title">Samsung Galaxy Watch 6 Classic 47mm</h3>
+                        <div class="product-rating">
+                            <div class="stars">
+                                <i class="fas fa-star"></i>
+                                <i class="fas fa-star"></i>
+                                <i class="fas fa-star"></i>
+                                <i class="fas fa-star"></i>
+                                <i class="far fa-star"></i>
+                            </div>
+                            <span class="rating-count">(876 avaliações)</span>
+                        </div>
+                        <div class="product-price">
+                            <span class="price-current">R$ 2.199</span>
+                            <span class="price-old">R$ 2.999</span>
+                            <span class="price-discount">-27%</span>
+                        </div>
+                        <div class="product-shipping">
+                            <i class="fas fa-truck"></i> Frete Grátis
+                        </div>
+                        <button class="product-btn">
+                            <i class="fas fa-external-link-alt"></i> Ver Oferta
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Product 8 -->
+                <div class="product-card">
+                    <div class="product-badges">
+                        <span class="product-badge badge-sale">-45%</span>
+                    </div>
+                    <button class="product-wishlist"><i class="far fa-heart"></i></button>
+                    <div class="product-image">
+                        <img src="https://images.unsplash.com/photo-1583394838336-acd977736f90?w=300" alt="Headphone">
+                        <div class="product-quick-actions">
+                            <button class="quick-action-btn"><i class="fas fa-eye"></i></button>
+                            <button class="quick-action-btn"><i class="fas fa-sync-alt"></i></button>
+                        </div>
+                    </div>
+                    <div class="product-info">
+                        <span class="product-category">Áudio</span>
+                        <h3 class="product-title">JBL Tune 770NC Wireless Headphone ANC</h3>
+                        <div class="product-rating">
+                            <div class="stars">
+                                <i class="fas fa-star"></i>
+                                <i class="fas fa-star"></i>
+                                <i class="fas fa-star"></i>
+                                <i class="fas fa-star"></i>
+                                <i class="fas fa-star-half-alt"></i>
+                            </div>
+                            <span class="rating-count">(2.103 avaliações)</span>
+                        </div>
+                        <div class="product-price">
+                            <span class="price-current">R$ 549</span>
+                            <span class="price-old">R$ 999</span>
+                            <span class="price-discount">-45%</span>
+                        </div>
+                        <div class="product-shipping">
+                            <i class="fas fa-truck"></i> Frete Grátis
+                        </div>
+                        <button class="product-btn">
+                            <i class="fas fa-external-link-alt"></i> Ver Oferta
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <div style="text-align: center; margin-top: 50px;">
+                <a href="#" class="btn btn-secondary">Ver Todos os Produtos <i class="fas fa-arrow-right"></i></a>
+            </div>
+        </div>
+    </section>
+
+    <!-- ==================== FEATURED PRODUCT ==================== -->
+    <section class="featured-product">
+        <div class="container">
+            <div class="featured-content">
+                <div class="featured-image">
+                    <img src="https://images.unsplash.com/photo-1606220588913-b3aacb4d2f46?w=400" alt="PlayStation 5">
+                    <div class="featured-discount">
+                        <span>50%</span>
+                        <span>OFF</span>
+                    </div>
+                </div>
+                <div class="featured-text">
+                    <p class="section-subtitle" style="text-transform: uppercase; letter-spacing: 3px; font-weight: 600; font-size: 13px;">Oferta Especial da Semana</p>
+                    <h2>PlayStation 5 Console Bundle Edição Especial</h2>
+                    <p>O console mais desejado do mundo agora com um desconto imperdível! Aproveite esta oferta limitada e garanta já o seu PS5 com controle DualSense e jogo incluso.</p>
+                    <ul class="featured-list">
+                        <li><i class="fas fa-check-circle"></i> SSD Ultra-rápido de 825GB</li>
+                        <li><i class="fas fa-check-circle"></i> Ray Tracing em tempo real</li>
+                        <li><i class="fas fa-check-circle"></i> Áudio 3D Tempest</li>
+                        <li><i class="fas fa-check-circle"></i> Controle DualSense incluso</li>
+                        <li><i class="fas fa-check-circle"></i> Garantia de 12 meses</li>
+                    </ul>
+                    <div class="featured-price">
+                        <span class="price-current">R$ 2.999</span>
+                        <span class="price-old">R$ 4.999</span>
+                        <span class="price-discount">-40%</span>
+                    </div>
+                    <p style="margin-bottom: 20px; font-size: 14px;"><i class="fas fa-clock" style="color: var(--primary-color);"></i> Oferta termina em:</p>
+                    <div class="featured-timer">
+                        <div class="timer-box">
+                            <span id="days">02</span>
+                            <span>Dias</span>
+                        </div>
+                        <div class="timer-box">
+                            <span id="hours">14</span>
+                            <span>Horas</span>
+                        </div>
+                        <div class="timer-box">
+                            <span id="minutes">35</span>
+                            <span>Min</span>
+                        </div>
+                        <div class="timer-box">
+                            <span id="seconds">22</span>
+                            <span>Seg</span>
+                        </div>
+                    </div>
+                    <a href="#" class="btn btn-primary">Aproveitar Oferta <i class="fas fa-arrow-right"></i></a>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ==================== TESTIMONIALS ==================== -->
+    <section class="testimonials">
+        <div class="container">
+            <h2 class="section-title"><span class="accent-border">O Que Nossos Clientes Dizem</span></h2>
+            <p class="section-subtitle">Milhares de clientes satisfeitos com nossas ofertas</p>
+            <div class="testimonials-grid">
+                <div class="testimonial-card">
+                    <div class="testimonial-header">
+                        <div class="testimonial-avatar">M</div>
+                        <div class="testimonial-info">
+                            <h4>Maria Silva</h4>
+                            <span>São Paulo, SP</span>
+                        </div>
+                    </div>
+                    <div class="testimonial-rating">
+                        <i class="fas fa-star"></i>
+                        <i class="fas fa-star"></i>
+                        <i class="fas fa-star"></i>
+                        <i class="fas fa-star"></i>
+                        <i class="fas fa-star"></i>
+                    </div>
+                    <p class="testimonial-text">Comprei meu iPhone através do site e economizei mais de R$ 1.500! Produto original, entrega rápida e atendimento excelente. Super recomendo!</p>
+                </div>
+
+                <div class="testimonial-card">
+                    <div class="testimonial-header">
+                        <div class="testimonial-avatar">J</div>
+                        <div class="testimonial-info">
+                            <h4>João Santos</h4>
+                            <span>Rio de Janeiro, RJ</span>
+                        </div>
+                    </div>
+                    <div class="testimonial-rating">
+                        <i class="fas fa-star"></i>
+                        <i class="fas fa-star"></i>
+                        <i class="fas fa-star"></i>
+                        <i class="fas fa-star"></i>
+                        <i class="fas fa-star"></i>
+                    </div>
+                    <p class="testimonial-text">Sempre encontro as melhores ofertas aqui. Já comprei notebook, headphone e smartwatch. Todos com ótimos preços e qualidade garantida!</p>
+                </div>
+
+                <div class="testimonial-card">
+                    <div class="testimonial-header">
+                        <div class="testimonial-avatar">A</div>
+                        <div class="testimonial-info">
+                            <h4>Ana Oliveira</h4>
+                            <span>Belo Horizonte, MG</span>
+                        </div>
+                    </div>
+                    <div class="testimonial-rating">
+                        <i class="fas fa-star"></i>
+                        <i class="fas fa-star"></i>
+                        <i class="fas fa-star"></i>
+                        <i class="fas fa-star"></i>
+                        <i class="fas fa-star-half-alt"></i>
+                    </div>
+                    <p class="testimonial-text">Site confiável e seguro! Fiz várias compras e nunca tive problemas. O frete grátis é um diferencial incrível. Virei cliente fiel!</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ==================== NEWSLETTER ==================== -->
+    <section class="newsletter">
+        <div class="container">
+            <div class="newsletter-content">
+                <div class="newsletter-text">
+                    <h3><i class="fas fa-envelope"></i> Receba Ofertas Exclusivas</h3>
+                    <p>Cadastre-se e receba as melhores promoções direto no seu e-mail!</p>
+                </div>
+                <form class="newsletter-form">
+                    <input type="email" placeholder="Digite seu melhor e-mail" required>
+                    <button type="submit">Cadastrar</button>
+                </form>
+            </div>
+        </div>
+    </section>
+
+    <!-- ==================== FOOTER ==================== -->
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-grid">
+                <div class="footer-col footer-about">
+                    <div class="logo" style="margin-bottom: 20px;">
+                        <div class="logo-icon">
+                            <i class="fas fa-bolt"></i>
+                        </div>
+                        <div class="logo-text">Mega<span>Ofertas</span></div>
+                    </div>
+                    <p>Somos especialistas em encontrar as melhores ofertas para você. Trabalhamos com as principais lojas e marcas do Brasil para garantir os melhores preços e a melhor experiência de compra.</p>
+                    <div class="footer-social">
+                        <a href="#"><i class="fab fa-facebook-f"></i></a>
+                        <a href="#"><i class="fab fa-instagram"></i></a>
+                        <a href="#"><i class="fab fa-twitter"></i></a>
+                        <a href="#"><i class="fab fa-youtube"></i></a>
+                        <a href="#"><i class="fab fa-tiktok"></i></a>
+                    </div>
+                </div>
+
+                <div class="footer-col">
+                    <h4>Categorias</h4>
+                    <ul class="footer-links">
+                        <li><a href="#">Smartphones</a></li>
+                        <li><a href="#">Notebooks</a></li>
+                        <li><a href="#">Áudio</a></li>
+                        <li><a href="#">Games</a></li>
+                        <li><a href="#">Smart TVs</a></li>
+                        <li><a href="#">Wearables</a></li>
+                    </ul>
+                </div>
+
+                <div class="footer-col">
+                    <h4>Links Úteis</h4>
+                    <ul class="footer-links">
+                        <li><a href="#">Sobre Nós</a></li>
+                        <li><a href="#">Como Funciona</a></li>
+                        <li><a href="#">Programa de Afiliados</a></li>
+                        <li><a href="#">Blog</a></li>
+                        <li><a href="#">FAQ</a></li>
+                        <li><a href="#">Contato</a></li>
+                    </ul>
+                </div>
+
+                <div class="footer-col">
+                    <h4>Suporte</h4>
+                    <ul class="footer-links">
+                        <li><a href="#">Central de Ajuda</a></li>
+                        <li><a href="#">Política de Privacidade</a></li>
+                        <li><a href="#">Termos de Uso</a></li>
+                        <li><a href="#">Trocas e Devoluções</a></li>
+                        <li><a href="#">Rastrear Pedido</a></li>
+                    </ul>
+                </div>
+
+                <div class="footer-col">
+                    <h4>Contato</h4>
+                    <ul class="footer-contact">
+                        <li><i class="fas fa-map-marker-alt"></i> São Paulo, SP - Brasil</li>
+                        <li><i class="fas fa-phone-alt"></i> (11) 99999-9999</li>
+                        <li><i class="fas fa-envelope"></i> contato@megaofertas.com</li>
+                        <li><i class="fas fa-clock"></i> Seg - Sex: 9h às 18h</li>
+                    </ul>
+                    <h4 style="margin-top: 20px;">Formas de Pagamento</h4>
+                    <div class="payment-methods">
+                        <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/5/5e/Visa_Inc._logo.svg/200px-Visa_Inc._logo.svg.png" alt="Visa">
+                        <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/2/2a/Mastercard-logo.svg/200px-Mastercard-logo.svg.png" alt="Mastercard">
+                        <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/b/b5/PayPal.svg/200px-PayPal.svg.png" alt="PayPal">
+                        <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/1/15/Pix_logo.svg/200px-Pix_logo.svg.png" alt="Pix">
+                    </div>
+                </div>
+            </div>
+
+            <div class="footer-bottom">
+                <p>&copy; 2026 MegaOfertas. Todos os direitos reservados. Desenvolvido com <i class="fas fa-heart" style="color: var(--primary-color);"></i></p>
+                <div class="footer-bottom-links">
+                    <a href="#">Privacidade</a>
+                    <a href="#">Termos</a>
+                    <a href="#">Cookies</a>
+                    <a href="#">Sitemap</a>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <!-- ==================== BACK TO TOP ==================== -->
+    <button class="back-to-top" id="backToTop">
+        <i class="fas fa-chevron-up"></i>
+    </button>
+
+    <!-- ==================== JAVASCRIPT ==================== -->
     <script>
-        console.log(`
-        ╔════════════════════════════════════════════╗
-        ║   MARKETING DE MILHÕES                    ║
-        ║   Comparador de Preços em Tempo Real      ║
-        ║   Bot: @marketingdemilhoes_bot            ║
-        ╚════════════════════════════════════════════╝
-        `);
+        // Back to Top Button
+        const backToTopBtn = document.getElementById('backToTop');
+        
+        window.addEventListener('scroll', () => {
+            if (window.scrollY > 500) {
+                backToTopBtn.classList.add('visible');
+            } else {
+                backToTopBtn.classList.remove('visible');
+            }
+        });
 
-        // Rastreamento de cliques
-        document.querySelectorAll('a').forEach(link => {
-            link.addEventListener('click', function() {
-                console.log('🔗 Link clicado:', this.href);
+        backToTopBtn.addEventListener('click', () => {
+            window.scrollTo({
+                top: 0,
+                behavior: 'smooth'
             });
         });
 
-        // Easter egg
-        let clicks = 0;
-        document.querySelector('.avatar').addEventListener('click', () => {
-            clicks++;
-            if (clicks === 5) {
-                alert('🎉 Cupom especial: ECONOMIZE50 - 50% OFF na primeira compra!');
-                clicks = 0;
+        // Countdown Timer
+        function updateTimer() {
+            const endDate = new Date();
+            endDate.setDate(endDate.getDate() + 2);
+            endDate.setHours(endDate.getHours() + 14);
+            
+            function update() {
+                const now = new Date();
+                const diff = endDate - now;
+                
+                const days = Math.floor(diff / (1000 * 60 * 60 * 24));
+                const hours = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+                const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
+                const seconds = Math.floor((diff % (1000 * 60)) / 1000);
+                
+                document.getElementById('days').textContent = String(days).padStart(2, '0');
+                document.getElementById('hours').textContent = String(hours).padStart(2, '0');
+                document.getElementById('minutes').textContent = String(minutes).padStart(2, '0');
+                document.getElementById('seconds').textContent = String(seconds).padStart(2, '0');
             }
+            
+            update();
+            setInterval(update, 1000);
+        }
+        
+        updateTimer();
+
+        // Product Tabs
+        const tabs = document.querySelectorAll('.products-tab');
+        tabs.forEach(tab => {
+            tab.addEventListener('click', () => {
+                tabs.forEach(t => t.classList.remove('active'));
+                tab.classList.add('active');
+            });
+        });
+
+        // Wishlist Toggle
+        const wishlistBtns = document.querySelectorAll('.product-wishlist');
+        wishlistBtns.forEach(btn => {
+            btn.addEventListener('click', () => {
+                const icon = btn.querySelector('i');
+                if (icon.classList.contains('far')) {
+                    icon.classList.remove('far');
+                    icon.classList.add('fas');
+                    btn.style.background = '#dc3545';
+                    btn.style.color = 'white';
+                } else {
+                    icon.classList.remove('fas');
+                    icon.classList.add('far');
+                    btn.style.background = 'white';
+                    btn.style.color = '#444';
+                }
+            });
+        });
+
+        // Mobile Menu Toggle (basic functionality)
+        const mobileMenuBtn = document.querySelector('.mobile-menu-btn');
+        const navList = document.querySelector('.nav-list');
+        
+        mobileMenuBtn.addEventListener('click', () => {
+            navList.style.display = navList.style.display === 'flex' ? 'none' : 'flex';
+            navList.style.flexDirection = 'column';
+            navList.style.position = 'absolute';
+            navList.style.top = '100%';
+            navList.style.left = '0';
+            navList.style.right = '0';
+            navList.style.background = 'white';
+            navList.style.boxShadow = '0 5px 20px rgba(0,0,0,0.1)';
+            navList.style.padding = '20px';
+        });
+
+        // Newsletter Form
+        const newsletterForm = document.querySelector('.newsletter-form');
+        newsletterForm.addEventListener('submit', (e) => {
+            e.preventDefault();
+            const email = newsletterForm.querySelector('input').value;
+            alert(`Obrigado por se cadastrar! Você receberá nossas ofertas em: ${email}`);
+            newsletterForm.reset();
+        });
+
+        // Smooth scroll for anchor links
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function(e) {
+                e.preventDefault();
+                const target = document.querySelector(this.getAttribute('href'));
+                if (target) {
+                    target.scrollIntoView({
+                        behavior: 'smooth',
+                        block: 'start'
+                    });
+                }
+            });
         });
     </script>
 </body>
